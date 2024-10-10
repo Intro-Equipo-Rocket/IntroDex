@@ -21,7 +21,6 @@ class Pokemon(BaseModel):
 
 
 class Error(BaseModel):
-    code: int
     detail: str
 
 

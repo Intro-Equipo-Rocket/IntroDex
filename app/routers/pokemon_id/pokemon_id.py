@@ -1,17 +1,14 @@
 from fastapi import HTTPException, status, APIRouter
-from model_pokemon_id import Pokemon, Error, pokemones
+from app.model_pokemon_id import Pokemon, Error, pokemones
 
 router = APIRouter()
 
 
-@router.get("/")
-def list() -> list[Pokemon]:
-    return pokemones
-
-
-@router.get("/{id}", responses={404: {"model": Error}})
+@router.get("/{id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
 def get_pokemon(id: int) -> Pokemon:
     for pokemon in pokemones:
         if pokemon.id == id:
             return pokemon
-    raise HTTPException(status_code=404, detail="Pokemon not found")
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="Pokemon no encontrado."
+    )
