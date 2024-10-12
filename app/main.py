@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 
+from app.routers.main import api_router_delete_pokemon_id
+
+
 app = FastAPI()
+app.include_router(api_router_delete_pokemon_id)
 
 
 @app.get("/")
