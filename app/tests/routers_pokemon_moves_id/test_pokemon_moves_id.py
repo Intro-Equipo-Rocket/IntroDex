@@ -44,3 +44,19 @@ def test_detalles_pokemon() -> None:
         response.json()["pokemones_aprenden_tms"][0]["imagen"]
         == "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png"
     )
+
+
+def test_detalles_pokemon() -> None:
+    response = client.get("/moves/name/triple-axel")
+    assert response.status_code == 200
+    assert response.json()["nombre"] == "triple-axel"
+    assert response.json()["tipo"] == "Ice"
+    assert response.json()["categoria"] == "Physical"
+    assert (
+        response.json()["efecto"]
+        == "Inflicts regular damage with no additional effect."
+    )
+    assert (
+        response.json()["pokemones_aprenden_tms"][0]["imagen"]
+        == "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png"
+    )
