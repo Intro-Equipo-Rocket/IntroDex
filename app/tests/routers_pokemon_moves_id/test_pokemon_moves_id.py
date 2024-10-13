@@ -30,7 +30,7 @@ def test_movimiento_nombre_no_existe() -> None:
     assert response.status_code == 404
 
 
-def test_detalles_pokemon() -> None:
+def test_detalles_movimiento_id() -> None:
     response = client.get("/moves/id/813")
     assert response.status_code == 200
     assert response.json()["nombre"] == "triple-axel"
@@ -46,7 +46,7 @@ def test_detalles_pokemon() -> None:
     )
 
 
-def test_detalles_pokemon() -> None:
+def test_detalles_movimiento_nombre() -> None:
     response = client.get("/moves/name/triple-axel")
     assert response.status_code == 200
     assert response.json()["nombre"] == "triple-axel"
