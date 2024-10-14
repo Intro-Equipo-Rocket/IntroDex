@@ -1,5 +1,5 @@
 # Archivos csv del trabajo práctico
-data/
+*.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -9,4 +9,4 @@ app.include_router(equipos.router, prefix='/equipos', tags=['Equipos'])
 
 @app.get('/')
 def root():
-    return {'message': 'Bienvenido a la API de pokemon del Equipo Rocket!'}
+    return {'mensaje': 'Bienvenido a la API de pokemon del Equipo Rocket!'}
