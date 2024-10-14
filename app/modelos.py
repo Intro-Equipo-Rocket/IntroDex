@@ -68,3 +68,9 @@ class Movimientos(BaseModel):
     pokemones_aprenden_evolucionar: list[PreViewPokemon]
     pokemones_aprenden_tms: list[PreViewPokemon]
     pokemones_aprenden_grupo_huevo: list[PreViewPokemon]
+
+class Naturaleza(BaseModel):
+    id: int
+    nombre: str
+    stat_perjudicada_id: int
+    stat_mejorada_id: int
