@@ -34,8 +34,8 @@ def test_detalles_pokemon_id_existente() -> None:
     response = client.get("/pokemon/id/658")
     assert response.status_code == 200
     assert response.json()["nombre"] == "Greninja"
-    assert response.json()["tipo_principal"] == "Agua"
-    assert response.json()["habilidad_1"] == "Torrente"
+    assert response.json()["tipos"][0]["id_tipo_principal"] == 11
+    assert response.json()["habilidades"][0]["id_habilidad_1"] == 67
     assert (
         response.json()["imagen"]
         == "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/658.png"
@@ -46,8 +46,8 @@ def test_detalles_pokemon_nombre_existente() -> None:
     response = client.get("/pokemon/name/greninja")
     assert response.status_code == 200
     assert response.json()["nombre"] == "Greninja"
-    assert response.json()["tipo_principal"] == "Agua"
-    assert response.json()["habilidad_1"] == "Torrente"
+    assert response.json()["tipos"][0]["id_tipo_principal"] == 11
+    assert response.json()["habilidades"][0]["id_habilidad_1"] == 67
     assert (
         response.json()["imagen"]
         == "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/658.png"
