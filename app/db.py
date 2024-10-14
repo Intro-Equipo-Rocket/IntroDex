@@ -1,4 +1,4 @@
-from pokemon import Pokemon
+from app.pokemon import Pokemon
 
 pokemones: list[Pokemon] = [
     Pokemon(

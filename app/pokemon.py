@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class Pokemon(BaseModel):
     imagen: str
     id: int
@@ -18,6 +19,4 @@ class Pokemon(BaseModel):
     velocidad: int
     total: int
     evoluciones: list[str] | None = None
-    imagenes_evoluciones = list[str] | None = None
-
-
+    imagenes_evoluciones: list[str] | None = None
