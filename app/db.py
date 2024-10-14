@@ -19,7 +19,7 @@ pokemones: list[Pokemon] = [
         velocidad=90,
         total=320,
         evoluciones=["Raichu"],
-        imagenes_evoluciones="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/26.png",
+        imagenes_evoluciones=["https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/26.png"],
     ),
     Pokemon(
         imagen="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png",
@@ -39,7 +39,7 @@ pokemones: list[Pokemon] = [
         velocidad=60,
         total=405,
         evoluciones=["Venusaur"],
-        imagenes_evoluciones="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png",
+        imagenes_evoluciones=["https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png"],
     ),
     Pokemon(
         imagen="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/9.png",
@@ -58,8 +58,8 @@ pokemones: list[Pokemon] = [
         defensa_especial=105,
         velocidad=78,
         total=530,
-        evoluciones=None,
-        imagenes_evoluciones=None,
+        evoluciones=[],
+        imagenes_evoluciones=[],
     ),
     Pokemon(
         imagen="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/647.png",
@@ -78,8 +78,8 @@ pokemones: list[Pokemon] = [
         defensa_especial=90,
         velocidad=108,
         total=580,
-        evoluciones=None,
-        imagenes_evoluciones=None,
+        evoluciones=[],
+        imagenes_evoluciones=[],
     ),
     Pokemon(
         imagen="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/555.png",
@@ -98,7 +98,7 @@ pokemones: list[Pokemon] = [
         defensa_especial=55,
         velocidad=95,
         total=480,
-        evoluciones=None,
-        imagenes_evoluciones=None,
+        evoluciones=[],
+        imagenes_evoluciones=[],
     ),
 ]
