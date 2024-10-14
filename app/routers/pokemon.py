@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.modelos import *
-from app.db import *
+from app.db.pokemons_db import *
 
 router = APIRouter()
 
