@@ -1,6 +1,10 @@
 from fastapi import APIRouter
 from app.modelos import *
+<<<<<<< HEAD
 from app.db import *
+=======
+from app.db.equipos_db import *
+>>>>>>> parte_1
 
 router = APIRouter()
 
