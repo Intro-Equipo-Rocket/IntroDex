@@ -51,7 +51,7 @@ class IntegranteEquipo(BaseModel):
     defensa_especial: int
     velocidad: int
     total: int
-    movimientos = list[int]
+    movimientos: list[int]
 
 
 class PreViewPokemon(BaseModel):
@@ -60,7 +60,7 @@ class PreViewPokemon(BaseModel):
     nivel: int | None = None
 
 
-class Movimientos(BaseModel):
+class Movimiento(BaseModel):
     id: int
     nombre: str
     tipo: int
