@@ -28,6 +28,12 @@ class Pokemon(BaseModel):
 class Error(BaseModel):
     detail: str
 
+class Naturaleza(BaseModel):
+    id: int
+    nombre: str
+    stat_perjudicada_id: int
+    stat_mejorada_id: int
+
 class IntegranteEquipo(BaseModel):
     imagen: str
     id: int
@@ -43,6 +49,7 @@ class IntegranteEquipo(BaseModel):
     velocidad: int
     total: int
     movimientos: list[int]
+    naturaleza = Naturaleza
 
 class Equipo(BaseModel):
     id: int
