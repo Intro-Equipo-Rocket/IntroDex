@@ -1,12 +1,15 @@
 from fastapi import FastAPI
 
-from app.routers.main import api_router_delete_pokemon_id
+from app.routers import pokemon, movimientos, equipos
 
 
 app = FastAPI()
-app.include_router(api_router_delete_pokemon_id)
+
+app.include_router(pokemon.router, prefix="/pokemons", tags=["Pokemons"])
+app.include_router(movimientos.router, prefix="/movimientos", tags=["Movimientos"])
+app.include_router(equipos.router, prefix="/equipos", tags=["Equipos"])
 
 
 @app.get("/")
 def root():
-    return {"message": "Bienvenido a la API de pokemon del Equipo Rocket!"}
+    return {"mensaje": "Bienvenido a la API de pokemon del Equipo Rocket!"}
