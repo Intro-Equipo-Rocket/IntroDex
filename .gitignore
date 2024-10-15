@@ -1,5 +1,6 @@
 # Archivos csv del trabajo práctico
-data/
+*.csv
+.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
