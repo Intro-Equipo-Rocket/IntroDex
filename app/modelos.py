@@ -31,12 +31,6 @@ class Error(BaseModel):
     detail: str
 
 
-class Equipo(BaseModel):
-    id: int
-    nombre: str
-    pokemones: list[int]
-
-
 class IntegranteEquipo(BaseModel):
     imagen: str
     id: int
@@ -53,6 +47,12 @@ class IntegranteEquipo(BaseModel):
     total: int
     movimientos: list[int]
 
+
+class Equipo(BaseModel):
+    id: int
+    nombre: str
+    pokemones: list[IntegranteEquipo] 
+      
 
 class PreViewPokemon(BaseModel):
     id_pokemon: int
