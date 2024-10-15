@@ -42,7 +42,7 @@ class IntegranteEquipo(BaseModel):
     defensa_especial: int
     velocidad: int
     total: int
-    movimientos = list[int]
+    movimientos: list[int]
 
 class Equipo(BaseModel):
     id: int
