@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from typing import Optional
 
 class Pokemon(BaseModel):
     imagen: str
@@ -18,5 +18,5 @@ class Pokemon(BaseModel):
     defensa_especial: int
     velocidad: int
     total: int
-    evoluciones: list[str] | None = None
-    imagenes_evoluciones: list[str] | None = None
+    evoluciones: Optional[list[str]] = []
+    imagenes_evoluciones: Optional[list[str]] = []

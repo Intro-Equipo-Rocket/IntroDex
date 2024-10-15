@@ -5,7 +5,7 @@ from app.db import pokemones
 router = APIRouter()
 
 
-@router.post("/create/{nuevo_pokemon}", status_code=status.HTTP_201_CREATED)
+@router.post("/create", status_code=status.HTTP_201_CREATED)
 def crear_pokemon(nuevo_pokemon: Pokemon):
     for pokemon in pokemones:
         if nuevo_pokemon.id == pokemon.id:

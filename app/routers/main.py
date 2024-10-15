@@ -1,4 +1,4 @@
-from fasapi import APIRouter
+from fastapi import APIRouter
 from app.routers import post_pokemon
 
 api_router_post_pokemon = APIRouter()
