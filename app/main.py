@@ -1,11 +1,9 @@
 from fastapi import FastAPI
-from .routers import pokemon, movimientos, equipos
+from app.routers.main import get_naturalezas_router
 
 app = FastAPI()
 
-app.include_router(pokemon.router, preffix='/pokemons', tags=['Pokemons'])
-app.include_router(movimientos.router, preffix='/movimientos', tags=['Movimientos'])
-app.include_router(equipos.router, prefix='/equipos', tags=['Equipos'])
+app.include_router(get_naturalezas_router)
 
 @app.get('/')
 def root():
