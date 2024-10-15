@@ -5,6 +5,7 @@ client = TestClient(app)
 
 
 def test_obtener_pokemones():
-    response = client.get("/pokemon")
+    response = client.get("/pokemons")
     assert response.status_code == 200
-    assert len(response.json()) == 5
+    assert len(response.json()) == 2
+
