@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from app.modelos import *
 from app.db.equipos_db import *
 
@@ -26,4 +26,9 @@ def obtener_equipo_por_id(equipo_id: int):
 
 @router.delete('/{equipo_id}')
 def eliminar_equipo(equipo_id: int):
-    pass
+    for i, equipo in enumerate(equipos_db):
+        if equipo.id == equipo_id:
+            equipo_eliminado = equipos_db.pop(i)
+            return {'mensaje': f"El equipo ({equipo_eliminado.nombre}) con id ({equipo_id}) ha sido eliminado."}
+        
+    raise HTTPException(status_code=404, detail=f'No se ha encontrado al equipo con id ({equipo_id}).')
