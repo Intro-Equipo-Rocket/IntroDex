@@ -18,5 +18,6 @@ equipos_db = [
                                 velocidad=45,
                                 total=318,
                                 movimientos=[14, 15, 22, 33, 34, 35, 38, 45, 72, 73, 74, 75],
-                                naturaleza=Naturaleza(id=1, nombre="Fuerte", stat_perjudicada_id=2, stat_mejorada_id=2))])
+                                naturaleza=Naturaleza(id=1, nombre="Fuerte", stat_perjudicada_id=2, stat_mejorada_id=2))],
+            generacion=1)
 ]
