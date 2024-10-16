@@ -30,7 +30,6 @@ def crear_pokemon(nuevo_pokemon: Pokemon):
     pokemones.append(nuevo_pokemon)
     return nuevo_pokemon
 
-
 @router.delete("/delete/{id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
 def get_pokemon(id: int) -> Pokemon:
     pokemon = buscar_pokemon(id)
