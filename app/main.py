@@ -3,7 +3,6 @@ from fastapi import FastAPI
 from app.routers import pokemon, movimientos, equipos
 
 
-
 app = FastAPI()
 
 
