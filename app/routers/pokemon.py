@@ -1,3 +1,4 @@
+
 from fastapi import APIRouter, HTTPException, status
 from app.modelos import *
 from app.db.pokemons_db import *
@@ -6,8 +7,15 @@ router = APIRouter()
 
 
 @router.get("/", response_model=list[Pokemon])
-def obtener_pokemons():
-    pass
+def obtener_pokemones() -> list[Pokemon]:
+    if not pokemones:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No hay pokemones disponibles",
+        )
+    return pokemones
+
+
 
 
 @router.get("/{pokemon_id}")
@@ -18,6 +26,7 @@ def obtener_pokemon_por_id(pokemon_id: int):
 @router.post("/")
 def crear_pokemon(nuevo_pokemon: Pokemon):
     pass
+
 
 
 @router.delete("/delete/{id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
