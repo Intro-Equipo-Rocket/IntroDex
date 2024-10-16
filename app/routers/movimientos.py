@@ -9,6 +9,10 @@ router = APIRouter()
 def get_pokemon(id: int) -> Movimiento:
     for move in Moves:
         if move.id == id:
+            move.pokemones_aprenden_evolucionar = None
+            move.pokemones_aprenden_subir_nivel = None
+            move.pokemones_aprenden_grupo_huevo = None
+            move.pokemones_aprenden_tms = None
             return move
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND, detail="Movimiento no encontrado."
@@ -19,6 +23,10 @@ def get_pokemon(id: int) -> Movimiento:
 def get_pokemon(nombre: str) -> Movimiento:
     for move in Moves:
         if move.nombre.lower() == nombre.lower():
+            move.pokemones_aprenden_evolucionar = None
+            move.pokemones_aprenden_subir_nivel = None
+            move.pokemones_aprenden_grupo_huevo = None
+            move.pokemones_aprenden_tms = None
             return move
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND, detail="Movimiento no encontrado."
