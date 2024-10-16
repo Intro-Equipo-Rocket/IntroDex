@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import HTTPException, status, APIRouter
 from app.modelos import *
 from app.db.pokemons_db import *
 
 router = APIRouter()
+
 
 @router.get("/", response_model=list[Pokemon])
 def obtener_pokemones() -> list[Pokemon]:
@@ -13,9 +14,12 @@ def obtener_pokemones() -> list[Pokemon]:
         )
     return pokemones
 
-@router.get('/{pokemon_id}')
+
+
+@router.get("/{pokemon_id}")
 def obtener_pokemon_por_id(pokemon_id: int):
     pass
+
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def crear_pokemon(nuevo_pokemon: Pokemon):
@@ -28,10 +32,11 @@ def crear_pokemon(nuevo_pokemon: Pokemon):
     return nuevo_pokemon
 
 
-@router.delete('/{pokemon_id}')
+@router.delete("/{pokemon_id}")
 def eliminar_pokemon_por_id(pokemon_id: int):
     pass
 
-@router.get('/{pokemon_id}/movimientos')
+
+@router.get("/{pokemon_id}/movimientos")
 def obtener_movimientos_del_pokemon(pokemon_id: int):
     pass

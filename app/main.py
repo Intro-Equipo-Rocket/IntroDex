@@ -1,7 +1,10 @@
 from fastapi import FastAPI
+
 from app.routers import pokemon, movimientos, equipos
 
+
 app = FastAPI()
+
 
 app.include_router(pokemon.router, prefix='/pokemons', tags=['Pokemons'])
 app.include_router(movimientos.router, prefix='/movimientos', tags=['Movimientos'])
