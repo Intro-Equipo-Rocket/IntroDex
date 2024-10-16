@@ -24,6 +24,7 @@ class Pokemon(BaseModel):
     movimientos_aprendibles_tms: list[int]
     movimientos_aprendibles_huevo: list[int]
     debilidades_tipo: list[int]
+    generacion: int
 
 class Error(BaseModel):
     detail: str
@@ -54,8 +55,9 @@ class IntegranteEquipo(BaseModel):
 class Equipo(BaseModel):
     id: int
     nombre: str
-    pokemones: list[IntegranteEquipo]  
-
+    pokemones: list[IntegranteEquipo]
+    generacion: int  
+      
 class PreViewPokemon(BaseModel):
     id_pokemon: int
     imagen: str
