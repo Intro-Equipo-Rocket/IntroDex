@@ -1,5 +1,6 @@
 from app.modelos import Pokemon
 
+
 pokemones: list[Pokemon] = [
     Pokemon(
         imagen="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png",
@@ -10,7 +11,6 @@ pokemones: list[Pokemon] = [
         peso=60,
         habilidades=[9],
         habilidad_oculta=31,
-        grupo_huevo=[5, 6],
         vida=35,
         ataque=55,
         defensa=40,
@@ -18,9 +18,16 @@ pokemones: list[Pokemon] = [
         defensa_especial=50,
         velocidad=90,
         total=320,
+        grupo_huevo=[25, 5],
         evoluciones=[26],
-        imagenes_evoluciones=["https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/26.png"],
-        movimientos_aprendibles_nivel=[33, 84, 98,],
+        imagenes_evoluciones=[
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/26.png"
+        ],
+        movimientos_aprendibles_nivel=[
+            33,
+            84,
+            98,
+        ],
         movimientos_aprendibles_evolucion=[85],
         movimientos_aprendibles_tms=[24, 25],
         movimientos_aprendibles_huevo=[],
@@ -62,8 +69,8 @@ pokemones: list[Pokemon] = [
         defensa_especial=71,
         velocidad=122,
         total=530,
-        evoluciones=None, 
-        imagenes_evoluciones=None,  
+        evoluciones=None,  # Greninja no tiene evoluciones
+        imagenes_evoluciones=None,  # No hay imágenes de evoluciones
         movimientos_aprendibles_nivel=[
             1,
             3,
@@ -79,8 +86,8 @@ pokemones: list[Pokemon] = [
             49,
             56,
             68,
-        ],  
-        movimientos_aprendibles_evolucion=[],  
+        ],  # IDs de movimientos aprendibles por nivel
+        movimientos_aprendibles_evolucion=[],  # IDs de movimientos aprendibles por evolución
         movimientos_aprendibles_tms=[
             13,
             14,
@@ -108,7 +115,7 @@ pokemones: list[Pokemon] = [
             91,
             92,
             100,
-        ],  
+        ],  # IDs de movimientos aprendibles por TMs
         movimientos_aprendibles_huevo=[170, 171, 172, 173, 174],
         debilidades_tipo=[
             100,
@@ -131,5 +138,4 @@ pokemones: list[Pokemon] = [
             200,
         ],
     ),
-    
 ]
