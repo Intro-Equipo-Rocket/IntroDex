@@ -53,14 +53,14 @@ class IntegranteEquipo(BaseModel):
     velocidad: int
     total: int
     movimientos: list[int]
-    naturaleza = Naturaleza
+    naturaleza: Naturaleza
 
 
 class Equipo(BaseModel):
     id: int
     nombre: str
-    pokemones: list[IntegranteEquipo] 
-      
+    pokemones: list[IntegranteEquipo]
+
 
 class PreViewPokemon(BaseModel):
     id_pokemon: int
