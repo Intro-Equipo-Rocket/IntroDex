@@ -31,12 +31,6 @@ class Error(BaseModel):
     detail: str
 
 
-class Equipo(BaseModel):
-    id: int
-    nombre: str
-    pokemones: list[int]
-
-
 class Naturaleza(BaseModel):
     id: int
     nombre: str
@@ -62,13 +56,19 @@ class IntegranteEquipo(BaseModel):
     naturaleza: Naturaleza
 
 
+class Equipo(BaseModel):
+    id: int
+    nombre: str
+    pokemones: list[IntegranteEquipo]  
+      
+
 class PreViewPokemon(BaseModel):
     id_pokemon: int
     imagen: str
     nivel: int | None = None
 
 
-class Movimiento(BaseModel):
+class Movimientos(BaseModel):
     id: int
     nombre: str
     tipo: int
