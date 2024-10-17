@@ -28,6 +28,7 @@ pokemon_prueba = Pokemon(
         movimientos_aprendibles_tms=[0],
         movimientos_aprendibles_huevo=[0],
         debilidades_tipo=[0],      
+        generacion=0,
     )
    
 def test_crear_pokemon_existente():
