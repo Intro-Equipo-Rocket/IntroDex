@@ -51,6 +51,7 @@ pokemones: list[Pokemon] = [
             100,
             100,
         ],
+        generacion=1,
     ),
     Pokemon(
         imagen="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/658.png",
@@ -137,5 +138,6 @@ pokemones: list[Pokemon] = [
             50,
             200,
         ],
+        generacion=7,
     ),
 ]
