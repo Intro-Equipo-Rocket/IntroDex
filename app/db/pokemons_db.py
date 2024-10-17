@@ -138,6 +138,6 @@ pokemones: list[Pokemon] = [
             50,
             200,
         ],
-        generacion=7,
+        generacion=6,
     ),
 ]
