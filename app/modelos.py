@@ -56,19 +56,21 @@ class IntegranteEquipo(BaseModel):
     movimientos: list[int]
     naturaleza: Naturaleza
 
+
 class Equipo(BaseModel):
     id: int
     nombre: str
     pokemones: list[IntegranteEquipo]
-    generacion: int  
-      
+    generacion: int
+
+
 class PreViewPokemon(BaseModel):
     id_pokemon: int
     imagen: str
     nivel: int | None = None
 
 
-class Movimientos(BaseModel):
+class Movimiento(BaseModel):
     id: int
     nombre: str
     tipo: int
