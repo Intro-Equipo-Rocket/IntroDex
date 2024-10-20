@@ -13,8 +13,8 @@ def obtener_naruralezas():
 
 @router.get("/", response_model=List[Equipo])
 def obtener_equipos(pagina: int, cantidad_pokemons: int = 10):
-    if not pagina >= 1 or not cantidad_pokemons >= 0:
-        raise HTTPException(status_code=400, detail="Algunos de los parámetros están siendo mal introducidas")
+    if not pagina >= 1 or not cantidad_pokemons >= 1:
+        raise HTTPException(status_code=404, detail="Algunos de los parámetros están siendo mal introducidas")
     
     skip = (pagina - 1) * 10
     equipos_pagina = equipos_db[skip:skip + cantidad_pokemons]

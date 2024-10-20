@@ -19,8 +19,7 @@ equipos_db = [
                                 total=318,
                                 movimientos=[14, 15, 22, 33, 34, 35, 38, 45, 72, 73, 74, 75],
                                 naturaleza=Naturaleza(id=1, nombre="Fuerte", stat_perjudicada_id=2, stat_mejorada_id=2))],
-            generacion=1),
-    
+            generacion=1),   
     Equipo(id=2, 
            nombre='Equipo 2', 
            pokemones=[
@@ -39,5 +38,13 @@ equipos_db = [
                                 total=309,
                                 movimientos=[14, 15, 22, 33, 34, 35, 38, 45, 72, 73, 74, 75],
                                 naturaleza=Naturaleza(id=1, nombre="Fuerte", stat_perjudicada_id=2, stat_mejorada_id=2))],
-            generacion=1)
+            generacion=1),
+    Equipo(id=3, nombre='Equipo 3', pokemones=[], generacion=1),
+    Equipo(id=4, nombre='Equipo 4', pokemones=[], generacion=1),
+    Equipo(id=5, nombre='Equipo 5', pokemones=[], generacion=1),
+    Equipo(id=6, nombre='Equipo 6', pokemones=[], generacion=1),
+    Equipo(id=7, nombre='Equipo 7', pokemones=[], generacion=1),
+    Equipo(id=8, nombre='Equipo 8', pokemones=[], generacion=1),
+    Equipo(id=9, nombre='Equipo 9', pokemones=[], generacion=1),
+    Equipo(id=10, nombre='Equipo 10', pokemones=[], generacion=1)
 ]
