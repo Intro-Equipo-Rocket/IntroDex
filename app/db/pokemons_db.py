@@ -87,6 +87,7 @@ pokemones: list[Pokemon] = [
             49,
             56,
             68,
+            813
         ],
         movimientos_aprendibles_evolucion=[],
         movimientos_aprendibles_tms=[
