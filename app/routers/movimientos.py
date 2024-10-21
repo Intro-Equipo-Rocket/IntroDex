@@ -6,7 +6,7 @@ router = APIRouter()
 
 
 @router.get("/{id}/pokemon", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
-def get_pokemon(id: int) -> Movimientos:
+def get_pokemon(id: int) -> Movimiento:
     for move in Moves:
         if move.id == id:
             move.nombre = None
