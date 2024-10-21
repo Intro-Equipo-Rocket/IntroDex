@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from app.modelos import Pokemon, Error, Movimientos
+from app.modelos import Pokemon, Error, Movimiento
 from app.db.pokemons_db import *
 from app.db.movimientos_db import *
 
@@ -69,7 +69,7 @@ def buscar_pokemon(id: int) -> Pokemon:
     )
 
 @router.get("/{pokemon_id}/movimientos")
-def obtener_movimientos_del_pokemon(pokemon_id: int) -> list[Movimientos]:
+def obtener_movimientos_del_pokemon(pokemon_id: int) -> list[Movimiento]:
     pokemon = buscar_pokemon(pokemon_id)
     movim_pkm = []
     for id_movim_del_pkm in (pokemon.movimientos_aprendibles_evolucion 
