@@ -5,51 +5,77 @@ test = TestClient(app)
 
 def test_editar_equipo_exitoso():
     nuevo_equipo = {
-        "id": 1,
-        "nombre": 'Equipo nuevo',
-        "pokemones": [{
-            "pokemon": {
-                "imagen": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png",
-                "id": 1,
-                "nombre": "Ivysaur",
-                "tipos": [12, 4],
-                "habilidades": [65],
-                "habilidad_oculta": 34,
-                "vida": 45,
-                "ataque": 49,
-                "defensa": 49,
-                "ataque_especial": 65,
-                "defensa_especial": 65,
-                "velocidad": 45,
-                "total": 318,
-                "movimientos_aprendibles_evolucion": [],
-                "movimientos_aprendibles_nivel": [],
-                "movimientos_aprendibles_tms": [],
-                "movimientos_aprendibles_huevo": [],
-                "debilidades_tipo": [],
-                "generacion": 1,
-                "altura": 10,  # Altura en decímetros
-                "peso": 130,  # Peso en hectogramos
-                "grupo_huevo": ["Monster", "Grass"]
-            },
-            "movimientos": [],
-            "naturaleza": {
-                "id": 1,
-                "nombre": "Fuerte",
-                "stat_perjudicada_id": 2,
-                "stat_mejorada_id": 2
-            },
-            "evs": {
-                "vida": 255,
-                "ataque": 255,
-                "defensa": 0,
-                "ataque_especial": 0,
-                "defensa_especial": 0,
-                "velocidad": 0
-            }
-        }],
-        "generacion": 1
+  "id": 1,
+  "nombre": "equipo prueba",
+  "pokemones": [
+    {
+      "pokemon": {
+        "imagen": "string",
+        "id": 27,
+        "nombre": "pruebamon",
+        "tipos": [
+          0
+        ],
+        "altura": 0,
+        "peso": 0,
+        "habilidades": [
+          0
+        ],
+        "habilidad_oculta": 0,
+        "grupo_huevo": [
+          0
+        ],
+        "vida": 0,
+        "ataque": 0,
+        "defensa": 0,
+        "ataque_especial": 0,
+        "defensa_especial": 0,
+        "velocidad": 0,
+        "total": 0,
+        "evoluciones": [
+          0
+        ],
+        "imagenes_evoluciones": [
+          "string"
+        ],
+        "movimientos_aprendibles_nivel": [
+          0
+        ],
+        "movimientos_aprendibles_evolucion": [
+          0
+        ],
+        "movimientos_aprendibles_tms": [
+          0
+        ],
+        "movimientos_aprendibles_huevo": [
+          0
+        ],
+        "debilidades_tipo": [
+          0
+        ],
+        "generacion": 0
+      },
+      "movimientos": [
+        0
+      ],
+      "naturaleza": {
+        "id": 0,
+        "nombre": "string",
+        "stat_perjudicada_id": 0,
+        "stat_mejorada_id": 0
+      },
+      "evs": {
+        "vida": 0,
+        "ataque": 0,
+        "defensa": 0,
+        "ataque_especial": 0,
+        "defensa_especial": 0,
+        "velocidad": 0
+      }
     }
+  ],
+  "generacion": 0
+}
 
     test_1 = test.put("/equipos/1", json=nuevo_equipo)
     
