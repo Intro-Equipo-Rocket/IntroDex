@@ -1,4 +1,4 @@
-from app.modelos import Movimiento, PreViewPokemon
+from app.modelos import Movimientos, PreViewPokemon
 
 
 def crear_preview_pokemon(id_pokemon: int, nivel: int) -> PreViewPokemon:
@@ -9,8 +9,8 @@ def crear_preview_pokemon(id_pokemon: int, nivel: int) -> PreViewPokemon:
     )
 
 
-Moves: list[Movimiento] = [
-    Movimiento(
+Moves: list[Movimientos] = [
+    Movimientos(
         id=813,
         nombre="triple-axel",
         tipo=15,

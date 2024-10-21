@@ -53,7 +53,8 @@ class Equipo(BaseModel):
     id: int
     nombre: str
     pokemones: list[IntegranteEquipo]
-
+    generacion: int  
+      
 class PreViewPokemon(BaseModel):
     id_pokemon: int
     imagen: str

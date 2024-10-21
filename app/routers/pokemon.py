@@ -6,6 +6,16 @@ from app.db.movimientos_db import *
 router = APIRouter()
 
 
+@router.get("/", response_model=list[Pokemon])
+def obtener_pokemones() -> list[Pokemon]:
+    if not pokemones:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No hay pokemones disponibles",
+        )
+    return pokemones
+
+
 @router.get("/id/{id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
 def get_pokemon(id: int) -> Pokemon:
     for pokemon in pokemones:

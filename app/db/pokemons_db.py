@@ -73,8 +73,8 @@ pokemones: list[Pokemon] = [
         defensa_especial=71,
         velocidad=122,
         total=530,
-        evoluciones=None,
-        imagenes_evoluciones=None,
+        evoluciones=None,  # Greninja no tiene evoluciones
+        imagenes_evoluciones=None,  # No hay imágenes de evoluciones
         movimientos_aprendibles_nivel=[
             1,
             3,
@@ -120,7 +120,7 @@ pokemones: list[Pokemon] = [
             91,
             92,
             100,
-        ],
+        ],  # IDs de movimientos aprendibles por TMs
         movimientos_aprendibles_huevo=[170, 171, 172, 173, 174],
         debilidades_tipo=[
             100,
