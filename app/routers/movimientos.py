@@ -50,3 +50,8 @@ def get_movimiento(nombre: str) -> Movimiento:
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND, detail="Movimiento no encontrado."
     )
+
+
+@router.get("/{movimiento_id}/pokemons")
+def obtener_pokemons_por_movimiento(movimiento_id: int):
+    pass
