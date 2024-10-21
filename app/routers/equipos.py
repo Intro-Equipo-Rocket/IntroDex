@@ -14,7 +14,7 @@ def obtener_naruralezas():
 def obtener_equipos():
     pass
 
-@router.post("/")
+@router.post("/", status_code=status.HTTP_201_CREATED)
 def crear_equipo(id_equipo: int, nombre_equipo: str, generacion_equipo: int, id_pkm_1: int=None, movimientos_pkm_1: list[int]=None, id_naturaleza_1: int=None, evs_pkm_1: Estadisticas=None, id_pkm_2: int=None, movimientos_pkm_2: list[int]=None, id_naturaleza_2: int=None, evs_pkm_2: Estadisticas=None, id_pkm_3: int=None, movimientos_pkm_3: list[int]=None, id_naturaleza_3: int=None, evs_pkm_3: Estadisticas=None, id_pkm_4: int=None, movimientos_pkm_4: list[int]=None, id_naturaleza_4: int=None, evs_pkm_4: Estadisticas=None, id_pkm_5: int=None, movimientos_pkm_5: list[int]=None, id_naturaleza_5: int=None, evs_pkm_5: Estadisticas=None, id_pkm_6: int=None, movimientos_pkm_6: list[int]=None, id_naturaleza_6: int=None, evs_pkm_6: Estadisticas=None) -> Equipo:
     if not nombre_equipo:
         raise HTTPException(
