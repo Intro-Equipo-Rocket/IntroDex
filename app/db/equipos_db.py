@@ -40,3 +40,34 @@ equipos = [
         generacion=1 
     )
 ]
+
+equipos_db = [Equipo(id=1, 
+                          nombre='Equipo existente',
+                          pokemones=[IntegranteEquipo(pokemon=Pokemon(
+                                    imagen="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
+                                    id=1,
+                                    nombre="bulbasaur",
+                                    tipos=[12, 4],
+                                    altura=45,
+                                    peso=66,
+                                    grupo_huevo=[],
+                                    habilidades=[65],
+                                    habilidad_oculta=34,
+                                    vida=45,
+                                    ataque=49,
+                                    defensa=49,
+                                    ataque_especial=65,
+                                    defensa_especial=65,
+                                    velocidad=45,
+                                    total=318,
+                                    movimientos_aprendibles_evolucion=[],
+                                    movimientos_aprendibles_nivel=[],
+                                    movimientos_aprendibles_tms=[],
+                                    movimientos_aprendibles_huevo=[],
+                                    debilidades_tipo=[],
+                                    generacion=1),
+                                movimientos=[],
+                                naturaleza=Naturaleza(id=1, nombre="Fuerte", stat_perjudicada_id=2, stat_mejorada_id=2),
+                                evs=Estadisticas(vida=255, ataque=255, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0)
+                                )],
+                                generacion=1)]

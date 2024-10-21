@@ -32,7 +32,15 @@ def crear_equipo(equipo: Equipo):
 
 @router.put("/{equipo_id}")
 def editar_equipo(equipo_id: int, equipo_nuevo: Equipo):
-    pass
+    for equipo in equipos_db:
+        if equipo.id == equipo_id:
+            equipo.nombre = equipo_nuevo.nombre
+            equipo.pokemones = equipo_nuevo.pokemones
+            equipo.generacion = equipo_nuevo.generacion
+
+            return equipo
+            
+    raise HTTPException(status_code=404, detail="El equipo a cambiar no fue encontrado")
 
 
 @router.get("/id/{equipo_id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
