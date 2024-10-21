@@ -15,11 +15,14 @@ def obtener_equipos():
     pass
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def crear_equipo(id_equipo: int, nombre_equipo: str, generacion_equipo: int, id_pkm_1: int=None, movimientos_pkm_1: list[int]=None, id_naturaleza_1: int=None, evs_pkm_1: Estadisticas=None, id_pkm_2: int=None, movimientos_pkm_2: list[int]=None, id_naturaleza_2: int=None, evs_pkm_2: Estadisticas=None, id_pkm_3: int=None, movimientos_pkm_3: list[int]=None, id_naturaleza_3: int=None, evs_pkm_3: Estadisticas=None, id_pkm_4: int=None, movimientos_pkm_4: list[int]=None, id_naturaleza_4: int=None, evs_pkm_4: Estadisticas=None, id_pkm_5: int=None, movimientos_pkm_5: list[int]=None, id_naturaleza_5: int=None, evs_pkm_5: Estadisticas=None, id_pkm_6: int=None, movimientos_pkm_6: list[int]=None, id_naturaleza_6: int=None, evs_pkm_6: Estadisticas=None) -> Equipo:
-    if not nombre_equipo:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="El nombre del equipo es obligatorio"
-        )
+def crear_equipo(id_equipo: int, nombre_equipo: str, generacion_equipo: int,
+                 id_pkm_1: int=None, movimientos_pkm_1: list[int]=None, id_naturaleza_1: int=None, evs_pkm_1: Estadisticas=Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
+                 id_pkm_2: int=None, movimientos_pkm_2: list[int]=None, id_naturaleza_2: int=None, evs_pkm_2: Estadisticas=Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
+                 id_pkm_3: int=None, movimientos_pkm_3: list[int]=None, id_naturaleza_3: int=None, evs_pkm_3: Estadisticas=Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
+                 id_pkm_4: int=None, movimientos_pkm_4: list[int]=None, id_naturaleza_4: int=None, evs_pkm_4: Estadisticas=Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
+                 id_pkm_5: int=None, movimientos_pkm_5: list[int]=None, id_naturaleza_5: int=None, evs_pkm_5: Estadisticas=Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
+                 id_pkm_6: int=None, movimientos_pkm_6: list[int]=None, id_naturaleza_6: int=None, evs_pkm_6: Estadisticas=Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),) -> Equipo:
+    
     if generacion_equipo not in range(1, 9):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="La generación del equipo no es válida"
@@ -29,6 +32,7 @@ def crear_equipo(id_equipo: int, nombre_equipo: str, generacion_equipo: int, id_
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Ese equipo ya existe"
             )
+    
     nuevo_equipo: Equipo=Equipo(
         id=id_equipo,
         nombre=nombre_equipo,
@@ -51,30 +55,32 @@ def crear_equipo(id_equipo: int, nombre_equipo: str, generacion_equipo: int, id_
     equipos.append(nuevo_equipo)
     return nuevo_equipo
     
-def asignacion_datos_integrantes(id_pokemon: int, generacion_equipo, movimientos: list[int], evs: Estadisticas, id_naturaleza: int, equipo_a_asignar: Equipo) -> None:
+def asignacion_datos_integrantes(id_pokemon: int, generacion_equipo, movimientos_seleccionados: list[int], ptos_evs: Estadisticas, id_naturaleza: int, equipo_a_asignar: Equipo) -> None:
+    naturaleza_pkm = obtener_naturaleza_por_id(id_naturaleza)
     if not verificar_generacion_del_pokemon(id_pokemon, generacion_equipo):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"El pokemon de id {id_pokemon} no pertenece a la generacion del equipo"
         )
-    if not verificar_movimientos_pokemon(id_pokemon, movimientos):
+    if movimientos_seleccionados is None or not verificar_movimientos_pokemon(id_pokemon, movimientos_seleccionados):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=f"Algun movimiento del pokemon de id {id_pokemon} no son validos"
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"Algun movimiento del pokemon de id {id_pokemon} no son validos o no tiene movimientos"
         )
-    if not verificar_evs(evs):
+    if not verificar_evs(ptos_evs):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=f"Los EVs no son validos, asegurarse de que la suma de los EVs no sea mayor a 510 y que cada EV no sea mayor a 255"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Los EVs no son validos, asegurarse de que la suma de los EVs no sea mayor a 510 y que cada EV no sea mayor a 255"
         )
     
     equipo_a_asignar.pokemones.append(IntegranteEquipo(
+            id_pokemon=naturaleza_pkm,
             pokemon=buscar_pokemon(id_pokemon),
-            movimientos=movimientos,
-            naturaleza=obtener_natuaraleza_por_id(id_naturaleza),
-            evs=evs
+            movimientos=movimientos_seleccionados,
+            naturaleza=obtener_naturaleza_por_id(id_naturaleza),
+            evs=ptos_evs
         )
     )
     
 
-def obtener_natuaraleza_por_id(id_naturaleza: int) -> Naturaleza:
+def obtener_naturaleza_por_id(id_naturaleza: int) -> Naturaleza:
     for naturaleza in naturalezas:
         if naturaleza.id == id_naturaleza:
             return naturaleza
@@ -102,18 +108,21 @@ def verificar_generacion_del_pokemon(id_pokemon: int, generacion_equipo: int) ->
 
 def verificar_movimientos_pokemon(id_pokemon: int, id_movimientos: list[int]) -> bool:
     movimientos_aprendibles = obtener_movimientos_del_pokemon(id_pokemon)
-    i = 0
-    movimiento_esta_en_la_lista = False
-    while i < len(id_movimientos) and not movimiento_esta_en_la_lista:
-        j = 0
-        while j < len(movimientos_aprendibles) and not movimiento_esta_en_la_lista:
-            if id_movimientos[i] == movimientos_aprendibles[j].id:
-                movimiento_esta_en_la_lista = True
-            j += 1
-        i += 1
+    h = 0
+    while h < len(movimientos_aprendibles):
+        i = 0
+        movimiento_esta_en_la_lista = False
+        while i < len(id_movimientos) and not movimiento_esta_en_la_lista:
+            j = 0
+            while j < len(movimientos_aprendibles) and not movimiento_esta_en_la_lista:
+                if id_movimientos[i] == movimientos_aprendibles[j].id:
+                    movimiento_esta_en_la_lista = True
+                j += 1
+            i += 1
 
-    if not movimiento_esta_en_la_lista:
-        return False
+        if not movimiento_esta_en_la_lista:
+            return False
+        h+=1
 
     if len(id_movimientos) > 4 or len(id_movimientos) < 1:
         return False
