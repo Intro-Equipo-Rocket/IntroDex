@@ -28,6 +28,7 @@ class Pokemon(BaseModel):
     generacion: int
 
 
+
 class Error(BaseModel):
     detail: str
 
@@ -37,6 +38,7 @@ class Naturaleza(BaseModel):
     nombre: str
     stat_perjudicada_id: int
     stat_mejorada_id: int
+
 
 class Estadisticas(BaseModel):
     vida: int
