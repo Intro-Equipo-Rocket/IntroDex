@@ -27,6 +27,9 @@ pokemones: list[Pokemon] = [
             33,
             84,
             98,
+            25,
+            87,
+            113,
         ],
         movimientos_aprendibles_evolucion=[85],
         movimientos_aprendibles_tms=[24, 25],
@@ -87,8 +90,9 @@ pokemones: list[Pokemon] = [
             49,
             56,
             68,
-        ],  # IDs de movimientos aprendibles por nivel
-        movimientos_aprendibles_evolucion=[],  # IDs de movimientos aprendibles por evolución
+            813
+        ],
+        movimientos_aprendibles_evolucion=[],
         movimientos_aprendibles_tms=[
             13,
             14,

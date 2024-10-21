@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from app.modelos import *
+from app.modelos import Pokemon, Error, Movimiento
 from app.db.pokemons_db import *
 from app.db.movimientos_db import *
 
@@ -37,6 +37,7 @@ def get_pokemon(nombre: str) -> Pokemon:
 
 
 @router.get("/", response_model=list[Pokemon])
+@router.get("/", response_model=list[Pokemon])
 def obtener_pokemones() -> list[Pokemon]:
     if not pokemones:
         raise HTTPException(
@@ -44,6 +45,27 @@ def obtener_pokemones() -> list[Pokemon]:
             detail="No hay pokemones disponibles",
         )
     return pokemones
+
+
+@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.get("/id/{id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
+def get_pokemon(id: int) -> Pokemon:
+    for pokemon in pokemones:
+        if pokemon.id == id:
+            return pokemon
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="Pokemon no encontrado."
+    )
+
+
+@router.get("/nombre/{nombre}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
+def get_pokemon(nombre: str) -> Pokemon:
+    for pokemon in pokemones:
+        if pokemon.nombre.lower() == nombre.lower():
+            return pokemon
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="Pokemon no encontrado."
+    )
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
@@ -73,7 +95,7 @@ def buscar_pokemon(id: int) -> Pokemon:
     )
 
 @router.get("/{pokemon_id}/movimientos")
-def obtener_movimientos_del_pokemon(pokemon_id: int) -> list[Movimientos]:
+def obtener_movimientos_del_pokemon(pokemon_id: int) -> list[Movimiento]:
     pokemon = buscar_pokemon(pokemon_id)
     movim_pkm = []
     for id_movim_del_pkm in (pokemon.movimientos_aprendibles_evolucion 
