@@ -1,29 +1,41 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, status
 from app.modelos import *
 from app.db.equipos_db import *
 
 router = APIRouter()
 
-@router.get('/naturalezas')
+
+@router.get("/naturalezas")
 def obtener_naruralezas():
     pass
 
-@router.get('/')
+
+@router.get("/")
 def obtener_equipos():
     pass
 
-@router.post('/')
+
+@router.post("/")
 def crear_equipo(equipo: Equipo):
     pass
 
-@router.put('/{equipo_id}')
+
+@router.put("/{equipo_id}")
 def editar_equipo(equipo_id: int, equipo_nuevo: Equipo):
     pass
 
-@router.get('/{equipo_id}')
-def obtener_equipo_por_id(equipo_id: int):
-    pass
 
-@router.delete('/{equipo_id}')
+@router.get("/id/{equipo_id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
+def obtener_equipo_por_id(equipo_id: int) -> Equipo:
+    for equipo in equipos:
+        if equipo.id == equipo_id:
+            return equipo
+    raise HTTPException(
+        status_code= status.HTTP_404_NOT_FOUND, detail="Id de equipo inexistente"
+    )
+
+            
+    
+@router.delete("/{equipo_id}")
 def eliminar_equipo(equipo_id: int):
     pass
