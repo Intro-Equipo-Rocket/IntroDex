@@ -28,14 +28,15 @@ pokemon_prueba = Pokemon(
         movimientos_aprendibles_tms=[0],
         movimientos_aprendibles_huevo=[0],
         debilidades_tipo=[0],      
+        generacion=0,
     )
    
 def test_crear_pokemon_existente():
-    response = client.post("/pokemons", json=pokemones[0].dict())
+    response = client.post("/pokemons", json=pokemones[0].model_dump())
     assert response.status_code == 400
     assert len(pokemones) == 2
     
 def test_crear_pokemon_nuevo():
-    response = client.post("/pokemons", json=pokemon_prueba.dict())
+    response = client.post("/pokemons", json=pokemon_prueba.model_dump())
     assert response.status_code == 201
     assert len(pokemones) == 3

@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-
 class Pokemon(BaseModel):
     imagen: str
     id: int
@@ -10,7 +9,7 @@ class Pokemon(BaseModel):
     peso: int
     habilidades: list[int]
     habilidad_oculta: int | None = None
-    grupo_huevo: list[int]
+    grupo_huevo:  list[int]
     vida: int
     ataque: int
     defensa: int
@@ -30,7 +29,6 @@ class Pokemon(BaseModel):
 
 class Error(BaseModel):
     detail: str
-
 
 class Naturaleza(BaseModel):
     id: int

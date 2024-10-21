@@ -1,10 +1,12 @@
 from fastapi import APIRouter, HTTPException, status
-from app.modelos import *
+from app.modelos import Pokemon, Error, Movimientos
 from app.db.pokemons_db import *
+from app.db.movimientos_db import *
 
 router = APIRouter()
 
 
+@router.get("/", response_model=list[Pokemon])
 @router.get("/", response_model=list[Pokemon])
 def obtener_pokemones() -> list[Pokemon]:
     if not pokemones:
@@ -18,6 +20,27 @@ def obtener_pokemones() -> list[Pokemon]:
 @router.get("/{pokemon_id}")
 def obtener_pokemon_por_id(pokemon_id: int):
     pass
+
+
+@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.get("/id/{id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
+def get_pokemon(id: int) -> Pokemon:
+    for pokemon in pokemones:
+        if pokemon.id == id:
+            return pokemon
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="Pokemon no encontrado."
+    )
+
+
+@router.get("/nombre/{nombre}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
+def get_pokemon(nombre: str) -> Pokemon:
+    for pokemon in pokemones:
+        if pokemon.nombre.lower() == nombre.lower():
+            return pokemon
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="Pokemon no encontrado."
+    )
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
@@ -36,7 +59,6 @@ def get_pokemon(id: int) -> Pokemon:
     pokemones.remove(pokemon)
     return pokemon
 
-
 def buscar_pokemon(id: int) -> Pokemon:
     for pokemon in pokemones:
         if pokemon.id == id:
@@ -46,7 +68,15 @@ def buscar_pokemon(id: int) -> Pokemon:
         detail="Pokemon no encontrado o ya eliminado.",
     )
 
-
 @router.get("/{pokemon_id}/movimientos")
-def obtener_movimientos_del_pokemon(pokemon_id: int):
-    pass
+def obtener_movimientos_del_pokemon(pokemon_id: int) -> list[Movimientos]:
+    pokemon = buscar_pokemon(pokemon_id)
+    movim_pkm = []
+    for id_movim_del_pkm in (pokemon.movimientos_aprendibles_evolucion 
+                            + pokemon.movimientos_aprendibles_huevo
+                            + pokemon.movimientos_aprendibles_nivel
+                            + pokemon.movimientos_aprendibles_tms):
+        for movimientos in Moves:
+            if id_movim_del_pkm == movimientos.id:
+                movim_pkm.append(movimientos)
+    return movim_pkm
