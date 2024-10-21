@@ -30,7 +30,7 @@ def editar_equipo(equipo_id: int, equipo_nuevo: Equipo):
 
             return equipo
             
-        raise HTTPException(status_code=404, detail="El equipo a cambiar no fue encontrado")
+    raise HTTPException(status_code=404, detail="El equipo a cambiar no fue encontrado")
 
 
 @router.get("/{equipo_id}")
