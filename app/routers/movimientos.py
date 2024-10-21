@@ -41,7 +41,7 @@ def get_movimiento(id: int) -> Movimiento:
 @router.get("/nombre/{nombre}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
 def get_movimiento(nombre: str) -> Movimiento:
     for move in Moves:
-        if move.nombre.lower() == nombre.lower():
+        if move.nombre == nombre:
             move.pokemones_aprenden_evolucionar = None
             move.pokemones_aprenden_subir_nivel = None
             move.pokemones_aprenden_grupo_huevo = None
@@ -50,8 +50,3 @@ def get_movimiento(nombre: str) -> Movimiento:
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND, detail="Movimiento no encontrado."
     )
-
-
-@router.get("/{movimiento_id}/pokemons")
-def obtener_pokemons_por_movimiento(movimiento_id: int):
-    pass
