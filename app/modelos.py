@@ -28,7 +28,6 @@ class Pokemon(BaseModel):
     generacion: int
 
 
-
 class Error(BaseModel):
     detail: str
 
