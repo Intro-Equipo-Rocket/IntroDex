@@ -40,4 +40,3 @@ equipos = [
         generacion=1 
     )
 ]
-

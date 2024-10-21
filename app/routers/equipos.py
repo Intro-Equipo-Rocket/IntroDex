@@ -38,4 +38,9 @@ def obtener_equipo_por_id(equipo_id: int) -> Equipo:
     
 @router.delete("/{equipo_id}")
 def eliminar_equipo(equipo_id: int):
-    pass
+    for i, equipo in enumerate(equipos):
+        if equipo.id == equipo_id:
+            equipo_eliminado = equipos.pop(i)
+            return {'mensaje': f"El equipo ({equipo_eliminado.nombre}) con id ({equipo_id}) ha sido eliminado."}
+        
+    raise HTTPException(status_code=404, detail=f'No se ha encontrado al equipo con id ({equipo_id}).')

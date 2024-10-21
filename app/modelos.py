@@ -27,17 +27,14 @@ class Pokemon(BaseModel):
     debilidades_tipo: list[int]
     generacion: int
 
-
 class Error(BaseModel):
     detail: str
-
 
 class Naturaleza(BaseModel):
     id: int
     nombre: str
     stat_perjudicada_id: int
     stat_mejorada_id: int
-
 
 class Estadisticas(BaseModel):
     vida: int
@@ -57,8 +54,6 @@ class Equipo(BaseModel):
     id: int
     nombre: str
     pokemones: list[IntegranteEquipo]
-    generacion: int
-
 
 class PreViewPokemon(BaseModel):
     id_pokemon: int
