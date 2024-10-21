@@ -25,6 +25,7 @@ class Pokemon(BaseModel):
     movimientos_aprendibles_tms: list[int]
     movimientos_aprendibles_huevo: list[int]
     debilidades_tipo: list[int]
+    generacion: int
 
 
 class Error(BaseModel):
@@ -38,28 +39,25 @@ class Naturaleza(BaseModel):
     stat_mejorada_id: int
 
 
-class IntegranteEquipo(BaseModel):
-    imagen: str
-    id: int
-    nombre: str
-    tipos: list[int]
-    habilidades: list[int]
-    habilidad_oculta: int | None = None
+class Estadisticas(BaseModel):
     vida: int
     ataque: int
     defensa: int
     ataque_especial: int
     defensa_especial: int
     velocidad: int
-    total: int
+
+class IntegranteEquipo(BaseModel):
+    pokemon:Pokemon
     movimientos: list[int]
     naturaleza: Naturaleza
-
+    evs: Estadisticas
 
 class Equipo(BaseModel):
     id: int
     nombre: str
     pokemones: list[IntegranteEquipo]
+    generacion: int
 
 
 class PreViewPokemon(BaseModel):
@@ -68,7 +66,7 @@ class PreViewPokemon(BaseModel):
     nivel: int | None = None
 
 
-class Movimientos(BaseModel):
+class Movimiento(BaseModel):
     id: int
     nombre: str
     tipo: int

@@ -51,6 +51,7 @@ pokemones: list[Pokemon] = [
             100,
             100,
         ],
+        generacion=1,
     ),
     Pokemon(
         imagen="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/658.png",
@@ -69,8 +70,8 @@ pokemones: list[Pokemon] = [
         defensa_especial=71,
         velocidad=122,
         total=530,
-        evoluciones=None,  # Greninja no tiene evoluciones
-        imagenes_evoluciones=None,  # No hay imágenes de evoluciones
+        evoluciones=None,
+        imagenes_evoluciones=None,
         movimientos_aprendibles_nivel=[
             1,
             3,
@@ -86,8 +87,8 @@ pokemones: list[Pokemon] = [
             49,
             56,
             68,
-        ],  # IDs de movimientos aprendibles por nivel
-        movimientos_aprendibles_evolucion=[],  # IDs de movimientos aprendibles por evolución
+        ],
+        movimientos_aprendibles_evolucion=[],
         movimientos_aprendibles_tms=[
             13,
             14,
@@ -115,7 +116,7 @@ pokemones: list[Pokemon] = [
             91,
             92,
             100,
-        ],  # IDs de movimientos aprendibles por TMs
+        ],
         movimientos_aprendibles_huevo=[170, 171, 172, 173, 174],
         debilidades_tipo=[
             100,
@@ -137,5 +138,6 @@ pokemones: list[Pokemon] = [
             50,
             200,
         ],
+        generacion=6,
     ),
 ]
