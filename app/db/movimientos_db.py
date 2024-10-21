@@ -129,5 +129,29 @@ Moves: list[Movimiento] = [
             crear_preview_pokemon(658, None),
             crear_preview_pokemon(999, None),
         ],
+    ),
+    Movimiento(
+        id=87,
+        nombre="thunder",
+        tipo=13,
+        categoria=2,
+        potencia=110,
+        precision=70,
+        usos=10,
+        generacion=1,
+        efecto=36,
+        pokemones_aprenden_subir_nivel=[
+            crear_preview_pokemon(1, None),
+        ],
+        pokemones_aprenden_evolucionar=[
+            crear_preview_pokemon(2, None),
+        ],
+        pokemones_aprenden_tms=[
+            crear_preview_pokemon(25, None),
+        ],
+        pokemones_aprenden_grupo_huevo=[
+            crear_preview_pokemon(658, None),
+            crear_preview_pokemon(999, None),
+        ],
     )
 ]
