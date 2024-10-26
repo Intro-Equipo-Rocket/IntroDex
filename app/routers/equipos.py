@@ -7,13 +7,9 @@ from typing import List
 
 router = APIRouter()
 
-@router.get("/")
-def obtener_equipos():
-    pass
-
 @router.get("/pagina/{pagina}", response_model=List[Equipo])
 def obtener_equipos(pagina: int, cantidad_equipos: int = 10):
-    if not pagina >= 1 or not cantidad_equipos >= 1:
+    if pagina < 1 or cantidad_equipos < 1:
         raise HTTPException(status_code=404, detail="Algunos de los parámetros están siendo mal introducidas")
     
     skip = (pagina - 1) * 10
@@ -89,7 +85,6 @@ def asignacion_datos_integrantes(id_pokemon: int, generacion_equipo, movimientos
         )
     )
     
-
 def obtener_naturaleza_por_id(id_naturaleza: int) -> Naturaleza:
     for naturaleza in naturalezas:
         if naturaleza.id == id_naturaleza:
@@ -158,8 +153,6 @@ def obtener_equipo_por_id(equipo_id: int) -> Equipo:
     raise HTTPException(
         status_code= status.HTTP_404_NOT_FOUND, detail="Id de equipo inexistente"
     )
-
-            
     
 @router.delete("/{equipo_id}")
 def eliminar_equipo(equipo_id: int):
