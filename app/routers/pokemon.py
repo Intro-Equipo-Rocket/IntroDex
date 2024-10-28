@@ -37,7 +37,6 @@ def get_pokemon(nombre: str) -> Pokemon:
 
 
 @router.get("/", response_model=list[Pokemon])
-@router.get("/", response_model=list[Pokemon])
 def obtener_pokemones() -> list[Pokemon]:
     if not pokemones:
         raise HTTPException(
@@ -47,7 +46,6 @@ def obtener_pokemones() -> list[Pokemon]:
     return pokemones
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
 @router.get("/id/{id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
 def get_pokemon(id: int) -> Pokemon:
     for pokemon in pokemones:
