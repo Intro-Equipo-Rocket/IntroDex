@@ -6,9 +6,6 @@ client = TestClient(app)
 
 def test_crear_pokemon_existente():
     response = client.post("/pokemons", json=pokemones[0].model_dump())
-
-    print("Response JSON (Pokemon Existente):", response.json())
-
     assert response.status_code == 400
     assert len(pokemones) == 2
 
@@ -40,8 +37,6 @@ def test_crear_pokemon_nuevo():
         "debilidades_tipo": [0],
         "generacion": 0
     })
-
-    print("Response JSON (Pokemon Nuevo):", response.json())
 
     assert response.status_code == 201
     assert len(pokemones) == 3
