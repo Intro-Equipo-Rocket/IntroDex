@@ -8,7 +8,7 @@ def test_team_id_existe():
     response = client.get("/equipos/id/1")
     assert response.status_code == 200
     assert response.json()["id"] == 1
-    assert response.json()["nombre"] == "Equipo 1"
+    assert response.json()["nombre"] == "equipo prueba"
     
     
 def test_team_id_inexistente():

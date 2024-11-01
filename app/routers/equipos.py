@@ -13,7 +13,7 @@ def obtener_equipos(pagina: int, cantidad_equipos: int = 10):
         raise HTTPException(status_code=404, detail="Algunos de los parámetros están siendo mal introducidas")
     
     skip = (pagina - 1) * 10
-    equipos_pagina = equipos[skip:skip + cantidad_equipos]
+    equipos_pagina = equipos_db[skip:skip + cantidad_equipos]
 
     if not equipos_pagina:
         raise HTTPException(status_code=404, detail="No se encontraron equipos para esta página")
@@ -147,7 +147,7 @@ def editar_equipo(equipo_id: int, equipo_nuevo: Equipo):
 
 @router.get("/id/{equipo_id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
 def obtener_equipo_por_id(equipo_id: int) -> Equipo:
-    for equipo in equipos:
+    for equipo in equipos_db:
         if equipo.id == equipo_id:
             return equipo
     raise HTTPException(
