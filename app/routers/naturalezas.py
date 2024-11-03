@@ -7,7 +7,7 @@ from app.db.naturaleza_db import naturalezas
 router = APIRouter()
 
 @router.get("/", response_model=list[Naturaleza])
-def obtener_naturalezas() -> list[Naturaleza]:  # def obtener_naturalezas(session: Session = SessionDep):
+def obtener_naturalezas() -> list[Naturaleza]:  # def obtener_naturalezas(session: SessionDep):
     # query = select(Naturaleza)
     # naturalezas = session.exec(query).all()
     # if not naturalezas:
