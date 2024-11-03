@@ -6,7 +6,7 @@ import csv
 from fastapi import Depends
 from sqlmodel import create_engine, select, Session
 
-from app.modelos import Pokemon, Movimiento, PreViewPokemon, Naturaleza
+from modelos import Pokemon, Movimiento, PreViewPokemon, Naturaleza
 
 
 SQLITE_FILE_PATH = "database.db"
@@ -455,20 +455,20 @@ def cargar_naturalezas(natures):
 
 
 pokemones = cargar_pokemones(
-    "pokemon.csv",
-    "pokemon_types.csv",
-    "pokemon_abilities.csv",
-    "pokemon_egg_groups.csv",
-    "pokemon_stats.csv",
-    "pokemon_evolutions.csv",
-    "pokemon_moves.csv",
-    "type_efficacy.csv",
-    "pokemon_species.csv",
+    "../data/pokemon.csv",
+    "../data/pokemon_types.csv",
+    "../data/pokemon_abilities.csv",
+    "../data/pokemon_egg_groups.csv",
+    "../data/pokemon_stats.csv",
+    "../data/pokemon_evolutions.csv",
+    "../data/pokemon_moves.csv",
+    "../data/type_efficacy.csv",
+    "../data/pokemon_species.csv",
 )
 
-movimientos = cargar_movimientos("moves.csv", "pokemon_moves.csv")
+movimientos = cargar_movimientos("../data/moves.csv", "../data/pokemon_moves.csv")
 
-naturalezas = cargar_naturalezas("natures.csv")
+naturalezas = cargar_naturalezas("../data/natures.csv")
 
 print("info Greninja: \n")
 print(pokemones[657], "\n")
