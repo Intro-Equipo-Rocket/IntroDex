@@ -4,11 +4,18 @@ from app.db.equipos_db import *
 from app.db.naturaleza_db import *
 from app.routers.pokemon import *
 from typing import List
+from sqlmodel import Session, select
+from app.database import SessionDep
 
 router = APIRouter()
 
 @router.get("/pagina/{pagina}", response_model=List[Equipo])
-def obtener_equipos(pagina: int, cantidad_equipos: int = 10):
+def obtener_equipos(session: SessionDep, pagina: int, cantidad_equipos: int = 10):
+    # query = select(Equipo).offset((pagina - 1) * cantidad_equipos).limit(cantidad_equipos)
+    # equipos = session.exec(query).all()
+    # if not equipos:
+    #     raise HTTPException(status_code=404, detail="No se encontraron equipos para esta página")
+    # return equipos
     if pagina < 1 or cantidad_equipos < 1:
         raise HTTPException(status_code=404, detail="Algunos de los parámetros están siendo mal introducidas")
     
@@ -21,13 +28,24 @@ def obtener_equipos(pagina: int, cantidad_equipos: int = 10):
     return equipos_pagina
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def crear_equipo(id_equipo: int, nombre_equipo: str, generacion_equipo: int,
+def crear_equipo(session: SessionDep, id_equipo: int, nombre_equipo: str, generacion_equipo: int,
                  id_pkm_1: int=None, movimientos_pkm_1: list[int]=None, id_naturaleza_1: int=None, evs_pkm_1: Estadisticas=Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
                  id_pkm_2: int=None, movimientos_pkm_2: list[int]=None, id_naturaleza_2: int=None, evs_pkm_2: Estadisticas=Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
                  id_pkm_3: int=None, movimientos_pkm_3: list[int]=None, id_naturaleza_3: int=None, evs_pkm_3: Estadisticas=Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
                  id_pkm_4: int=None, movimientos_pkm_4: list[int]=None, id_naturaleza_4: int=None, evs_pkm_4: Estadisticas=Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
                  id_pkm_5: int=None, movimientos_pkm_5: list[int]=None, id_naturaleza_5: int=None, evs_pkm_5: Estadisticas=Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
                  id_pkm_6: int=None, movimientos_pkm_6: list[int]=None, id_naturaleza_6: int=None, evs_pkm_6: Estadisticas=Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),) -> Equipo:
+    
+    # query = select(Equipo).where(Equipo.id == id_equipo)
+    # equipo = session.exec(query).first()
+    # if equipo:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_400_BAD_REQUEST, detail="Ese equipo ya existe"
+    #     )
+    # if not nombre_equipo:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_400_BAD_REQUEST, detail="El nombre del equipo no puede estar vacío"
+    #     )
     
     if generacion_equipo not in range(1, 9):
         raise HTTPException(
@@ -46,28 +64,31 @@ def crear_equipo(id_equipo: int, nombre_equipo: str, generacion_equipo: int,
         generacion=generacion_equipo
     )
     if id_pkm_1 is not None:
-        asignacion_datos_integrantes(id_pkm_1, generacion_equipo, movimientos_pkm_1, evs_pkm_1, id_naturaleza_1, nuevo_equipo)
+        asignacion_datos_integrantes(id_pkm_1, generacion_equipo, movimientos_pkm_1, evs_pkm_1, id_naturaleza_1, nuevo_equipo, session)
     if id_pkm_2 is not None:
-        asignacion_datos_integrantes(id_pkm_2, generacion_equipo, movimientos_pkm_2, evs_pkm_2, id_naturaleza_2, nuevo_equipo)
+        asignacion_datos_integrantes(id_pkm_2, generacion_equipo, movimientos_pkm_2, evs_pkm_2, id_naturaleza_2, nuevo_equipo, session)
     if id_pkm_3 is not None:
-        asignacion_datos_integrantes(id_pkm_3, generacion_equipo, movimientos_pkm_3, evs_pkm_3, id_naturaleza_3, nuevo_equipo)
+        asignacion_datos_integrantes(id_pkm_3, generacion_equipo, movimientos_pkm_3, evs_pkm_3, id_naturaleza_3, nuevo_equipo, session)
     if id_pkm_4 is not None:
-        asignacion_datos_integrantes(id_pkm_4, generacion_equipo, movimientos_pkm_4, evs_pkm_4, id_naturaleza_4, nuevo_equipo)
+        asignacion_datos_integrantes(id_pkm_4, generacion_equipo, movimientos_pkm_4, evs_pkm_4, id_naturaleza_4, nuevo_equipo, session)
     if id_pkm_5 is not None:
-        asignacion_datos_integrantes(id_pkm_5, generacion_equipo, movimientos_pkm_5, evs_pkm_5, id_naturaleza_5, nuevo_equipo)
+        asignacion_datos_integrantes(id_pkm_5, generacion_equipo, movimientos_pkm_5, evs_pkm_5, id_naturaleza_5, nuevo_equipo, session)
     if id_pkm_6 is not None:
-        asignacion_datos_integrantes(id_pkm_6, generacion_equipo, movimientos_pkm_6, evs_pkm_6, id_naturaleza_6, nuevo_equipo)
+        asignacion_datos_integrantes(id_pkm_6, generacion_equipo, movimientos_pkm_6, evs_pkm_6, id_naturaleza_6, nuevo_equipo, session)
 
+    # session.add(nuevo_equipo)
+    # session.commit()
+    # session.refresh(nuevo_equipo)
     equipos.append(nuevo_equipo)
     return nuevo_equipo
     
-def asignacion_datos_integrantes(id_pokemon: int, generacion_equipo, movimientos_seleccionados: list[int], ptos_evs: Estadisticas, id_naturaleza: int, equipo_a_asignar: Equipo) -> None:
+def asignacion_datos_integrantes(id_pokemon: int, generacion_equipo, movimientos_seleccionados: list[int], ptos_evs: Estadisticas, id_naturaleza: int, equipo_a_asignar: Equipo, session: SessionDep) -> None:
     naturaleza_pkm = obtener_naturaleza_por_id(id_naturaleza)
-    if not verificar_generacion_del_pokemon(id_pokemon, generacion_equipo):
+    if not verificar_generacion_del_pokemon(id_pokemon, generacion_equipo, session):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"El pokemon de id {id_pokemon} no pertenece a la generacion del equipo"
         )
-    if movimientos_seleccionados is None or not verificar_movimientos_pokemon(id_pokemon, movimientos_seleccionados):
+    if movimientos_seleccionados is None or not verificar_movimientos_pokemon(id_pokemon, movimientos_seleccionados, session):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"Algun movimiento del pokemon de id {id_pokemon} no son validos o no tiene movimientos"
         )
@@ -85,7 +106,14 @@ def asignacion_datos_integrantes(id_pokemon: int, generacion_equipo, movimientos
         )
     )
     
-def obtener_naturaleza_por_id(id_naturaleza: int) -> Naturaleza:
+def obtener_naturaleza_por_id(session: SessionDep, id_naturaleza: int) -> Naturaleza:
+    # query = select(Naturaleza).where(Naturaleza.id == id_naturaleza)
+    # naturaleza = session.exec(query).first()
+    # if not naturaleza:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_404_NOT_FOUND, detail="Naturaleza no encontrada."
+    #     )
+    # return naturaleza
     for naturaleza in naturalezas:
         if naturaleza.id == id_naturaleza:
             return naturaleza
@@ -105,14 +133,22 @@ def verificar_evs(evs: Estadisticas) -> bool:
         return False
     return True
 
-def verificar_generacion_del_pokemon(id_pokemon: int, generacion_equipo: int) -> bool:
+def verificar_generacion_del_pokemon(id_pokemon: int, generacion_equipo: int, session: SessionDep) -> bool:
+    # query = select(Pokemon).where(Pokemon.id == id_pokemon)
+    # pokemon = session.exec(query).first()
+    # if pokemon.generacion > generacion_equipo:
+    #     return False
+    # return True
     pokemon = buscar_pokemon(id_pokemon)
     if pokemon.generacion > generacion_equipo:
         return False
     return True
 
-def verificar_movimientos_pokemon(id_pokemon: int, id_movimientos: list[int]) -> bool:
-    movimientos_aprendibles = obtener_movimientos_del_pokemon(id_pokemon)
+def verificar_movimientos_pokemon(id_pokemon: int, id_movimientos: list[int], session: SessionDep) -> bool:
+    movimientos_aprendibles = obtener_movimientos_del_pokemon(session, id_pokemon)
+    # query = select(Pokemon).where(Pokemon.id == id_pokemon)
+    # pokemon = session.exec(query).first()
+    # movimientos_aprendibles = pokemon.movimientos_aprendibles_evolucion + pokemon.movimientos_aprendibles_huevo + pokemon.movimientos_aprendibles_nivel + pokemon.movimientos_aprendibles_tms
     h = 0
     while h < len(movimientos_aprendibles):
         i = 0
@@ -134,7 +170,27 @@ def verificar_movimientos_pokemon(id_pokemon: int, id_movimientos: list[int]) ->
     return True
 
 @router.put("/{equipo_id}")
-def editar_equipo(equipo_id: int, equipo_nuevo: Equipo):
+def editar_equipo(session: SessionDep, equipo_id: int, equipo_nuevo: Equipo):
+    # query = select(Equipo).where(Equipo.id == equipo_id)
+    # equipo = session.exec(query).first()
+    # if not equipo:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_404_NOT_FOUND, detail="El equipo a cambiar no fue encontrado"
+    #     )
+    # if not equipo_nuevo.nombre:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_400_BAD_REQUEST, detail="El nombre del equipo no puede estar vacío"
+    #     )
+    # if equipo_nuevo.generacion not in range(1, 9):
+    #     raise HTTPException(
+    #         status_code=status.HTTP_400_BAD_REQUEST, detail="La generación del equipo no es válida"
+    #     )
+    # equipo.nombre = equipo_nuevo.nombre
+    # equipo.pokemones = equipo_nuevo.pokemones
+    # equipo.generacion = equipo_nuevo.generacion
+    # session.add(equipo)
+    # session.commit()
+    # session.refresh(equipo)
     for equipo in equipos_db:
         if equipo.id == equipo_id:
             equipo.nombre = equipo_nuevo.nombre
@@ -146,7 +202,14 @@ def editar_equipo(equipo_id: int, equipo_nuevo: Equipo):
     raise HTTPException(status_code=404, detail="El equipo a cambiar no fue encontrado")
 
 @router.get("/id/{equipo_id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
-def obtener_equipo_por_id(equipo_id: int) -> Equipo:
+def obtener_equipo_por_id(session: SessionDep, equipo_id: int) -> Equipo:
+    # query = select(Equipo).where(Equipo.id == equipo_id)
+    # equipo = session.exec(query).first()
+    # if not equipo:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_404_NOT_FOUND, detail="Id de equipo inexistente"
+    #     )
+    # return equipo
     for equipo in equipos_db:
         if equipo.id == equipo_id:
             return equipo
@@ -155,7 +218,16 @@ def obtener_equipo_por_id(equipo_id: int) -> Equipo:
     )
     
 @router.delete("/{equipo_id}")
-def eliminar_equipo(equipo_id: int):
+def eliminar_equipo(session: SessionDep, equipo_id: int):
+    # query = select(Equipo).where(Equipo.id == equipo_id)
+    # equipo = session.exec(query).first()
+    # if not equipo:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_404_NOT_FOUND, detail=f'No se ha encontrado al equipo con id ({equipo_id}).'
+    #     )
+    # session.delete(equipo)
+    # session.commit()
+    # return {'mensaje': f"El equipo ({equipo.nombre}) con id ({equipo_id}) ha sido eliminado."}
     for i, equipo in enumerate(equipos):
         if equipo.id == equipo_id:
             equipo_eliminado = equipos.pop(i)
