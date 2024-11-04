@@ -23,12 +23,8 @@ def upgrade() -> None:
     op.create_table(
         "naturaleza",
         sa.Column("id", sa.Integer, primary_key=True),
-        sa.Column("identifier", sa.Text, nullable=False),
         sa.Column("decreased_stat_id", sa.Integer, nullable=False),
         sa.Column("increased_stat_id", sa.Integer, nullable=False),
-        sa.Column("hates_flavor_id", sa.Integer, nullable=False),
-        sa.Column("likes_flavor_id", sa.Integer, nullable=False),
-        sa.Column("game_index", sa.Integer, nullable=False),
     )
 
 
