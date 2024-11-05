@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, List
+from sqlmodel import SQLModel, Field
 
 
 class Pokemon(BaseModel):
@@ -39,6 +40,18 @@ class Naturaleza(BaseModel):
     stat_perjudicada_id: int
     stat_mejorada_id: int
 
+# class NaturalezaBase(SQLModel):
+#     nombre: str
+#     stat_perjudicada_id: int
+#     stat_mejorada_id: int
+#
+#
+# class Naturaleza(NaturalezaBase, table=True):
+#     id: int = Field(default=None, primary_key=True)
+#
+#
+# class NaturalezaCreate(NaturalezaBase):
+#     pass
 
 class Estadisticas(BaseModel):
     vida: int
