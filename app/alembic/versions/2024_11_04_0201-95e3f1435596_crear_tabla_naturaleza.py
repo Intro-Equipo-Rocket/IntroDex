@@ -1,7 +1,7 @@
 """Crear tabla naturaleza
 
 Revision ID: 95e3f1435596
-Revises: 
+Revises: eaeb22837af1
 Create Date: 2024-11-04 02:01:59.396941
 
 """

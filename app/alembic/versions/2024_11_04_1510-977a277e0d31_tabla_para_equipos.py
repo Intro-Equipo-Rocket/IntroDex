@@ -1,7 +1,7 @@
 """Tabla para equipos
 
 Revision ID: 977a277e0d31
-Revises: 
+Revises: 73fe80d8d855
 Create Date: 2024-11-04 15:10:50.166487
 
 """
