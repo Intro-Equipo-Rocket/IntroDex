@@ -1,7 +1,7 @@
 """Crear tabla de estadisticas
 
 Revision ID: b46f7011bfec
-Revises: 
+Revises: bf6b6a6a3f1a
 Create Date: 2024-11-04 22:29:30.025019
 
 """

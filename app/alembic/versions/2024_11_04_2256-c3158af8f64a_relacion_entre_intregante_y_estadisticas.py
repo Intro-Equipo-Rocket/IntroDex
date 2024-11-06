@@ -1,7 +1,7 @@
 """Relacion entre intregante y estadisticas
 
 Revision ID: c3158af8f64a
-Revises: 
+Revises: b46f7011bfec
 Create Date: 2024-11-04 22:56:05.257377
 
 """
@@ -21,7 +21,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     with op.batch_alter_table("estadisticas") as batch_op:
-        batch_op.add_column("member_id", sa.Integer)
+        batch_op.add_column(sa.Column("member_id", sa.Integer))
         batch_op.create_foreign_key(
             "fk_integrante_estadisticas",
             "integrante_equipo",

@@ -1,7 +1,7 @@
 """Crear tabla integrante de equipo
 
 Revision ID: bf6b6a6a3f1a
-Revises: 
+Revises: cd263a7894b5
 Create Date: 2024-11-04 22:14:47.362131
 
 """

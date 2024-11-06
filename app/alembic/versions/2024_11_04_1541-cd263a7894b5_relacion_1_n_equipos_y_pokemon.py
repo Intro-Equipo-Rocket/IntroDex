@@ -1,7 +1,7 @@
 """Relacion 1:N equipos y pokemon
 
 Revision ID: cd263a7894b5
-Revises: 
+Revises: 977a277e0d31
 Create Date: 2024-11-04 15:41:19.327109
 
 """
@@ -21,7 +21,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     with op.batch_alter_table("pokemon") as batch_op:
-        batch_op.add_column("team_id", sa.Integer)
+        batch_op.add_column(sa.Column("team_id", sa.Integer))
         batch_op.create_foreign_key("fk_pokemon_equipo", "equipo", ["team_id"], ["id"])
 
 
