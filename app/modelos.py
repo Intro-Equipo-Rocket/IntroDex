@@ -248,8 +248,8 @@ class Equipo(SQLModel, table=True):
 
 
 
-# class Error(BaseModel):
-#     detail: str
+class Error(BaseModel):
+    detail: str
 
 
 # class Naturaleza(BaseModel):
