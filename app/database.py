@@ -469,10 +469,3 @@ pokemones = cargar_pokemones(
 movimientos = cargar_movimientos("moves.csv", "pokemon_moves.csv")
 
 naturalezas = cargar_naturalezas("natures.csv")
-
-print("info Greninja: \n")
-print(pokemones[657], "\n")
-print("info Shuriken de agua: \n")
-print(movimientos[593], "\n")
-print("data naturalezas: \n")
-print(naturalezas, "\n")
