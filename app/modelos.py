@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, List
+from sqlmodel import SQLModel, Field, Column, ForeignKey, Table, Relationship, Integer, Text, String
 
 
 class Pokemon(BaseModel):
@@ -27,6 +28,164 @@ class Pokemon(BaseModel):
     movimientos_aprendibles_huevo: list[int]
     debilidades_tipo: list[int]
     generacion: int
+
+
+# class PokemonBase(SQLModel):
+#     imagen: str = Field(sa_column=Column("imagen", Text, nullable=False))
+#     nombre: str = Field(sa_column=Column("identifier", Text, nullable=False))
+#     altura: int = Field(sa_column=Column("height", Integer, nullable=False))
+#     peso: int = Field(sa_column=Column("weight", Integer, nullable=False))
+#     generacion: int = Field(sa_column=Column("generation_id", Integer, nullable=False))
+#     id_evolucion: Optional[int] = Field(sa_column=Column("evolution_id", Integer, nullable=False))
+#     imagen_evolucion: str = Field(sa_column=Column("imagen_evolucion", Text, nullable=False))
+#
+#
+# class Pokemon(PokemonBase, table=True, tablename="pokemon"):
+#     id: int = Field(sa_column=Column("pokemon_id", Integer, primary_key=True))
+#     tipos: List[TiposDelPokemon] = Relationship(back_populates="pokemon")
+#     habilidades: List[HabilidadesDelPokemon] = Relationship(back_populates="pokemon")
+#     grupo_huevo: List[GrupoHuevoDelPokemon] = Relationship(back_populates="pokemon")
+#     stats: List[StatsDelPokemon] = Relationship(back_populates="pokemon")
+#     movimientos_aprendibles: List[MovimientosAprendiblesDelPokemon] = Relationship(back_populates="pokemon")
+#     debilidades_tipo: List[DebilidadesDelPokemon] = Relationship(back_populates="pokemon")
+#     equipos: List[EquipoDelPokemon] | None = Relationship(back_populates="pokemon")
+#
+#
+# class PokemonCreate(PokemonBase):
+#     pass
+#
+#
+# class Tipos(SQLModel, table=True, tablename="tipo_pokemon"):
+#     id: int = Field(sa_column=Column("type_id", Integer, primary_key=True))
+#     nombre: str = Field(sa_column=Column("identifier", Text, nullable=False))
+#     pokemon_id: int = Field(sa_column=Column("pokemon_id", Integer, ForeignKey("pokemon.pokemon_id")))
+#     pokemon: List[TiposDelPokemon] = Relationship(back_populates="tipos")
+#
+#
+# class TiposCreate(SQLModel):
+#     pass
+#
+#
+# class TiposDelPokemon(SQLModel, table=True):
+#     pokemon_id: int = Field(foreign_key="pokemon.id", primary_key=True)
+#     type_id: int = Field(foreign_key="tipo_pokemon.id", primary_key=True)
+#     pokemon: Pokemon = Relationship(back_populates="tipos")
+#     tipos: Tipos = Relationship(back_populates="pokemon")
+#
+#
+# class HabiliadesBase(SQLModel):
+#     nombre: str = Field(sa_column=Column("identifier", Text, nullable=False))
+#     es_habilidad_oculta: bool = Field(sa_column=Column("is_hiden", Integer, nullable=False, ge=0, le=1))
+#
+#
+# class Habilidades(HabiliadesBase, table=True, tablename="habilidades"):
+#     id: int = Field(sa_column=Column("ability_id", Integer, primary_key=True))
+#     pokemon_id: int = Field(sa_column=Column("pokemon_id", Integer, ForeignKey("pokemon.pokemon_id")))
+#     pokemones: List[HabilidadesDelPokemon] = Relationship(back_populates="habilidades")
+#
+#
+# class HabilidadesCreate(HabiliadesBase):
+#     pass
+#
+#
+# class HabilidadesDelPokemon(SQLModel, table=True):
+#     pokemon_id: int = Field(foreign_key="pokemon.id", primary_key=True)
+#     ability_id: int = Field(foreign_key="habilidades.id", primary_key=True)
+#     pokemon: Pokemon = Relationship(back_populates="habilidades")
+#     habilidades: Habilidades = Relationship(back_populates="pokemon")
+#
+#
+# class GrupoHuevo(SQLModel, table=True, tablename="grupo_huevo"):
+#     id: int = Field(sa_column=Column("egg_group_id", Integer, primary_key=True))
+#     pokemon_id: int = Field(sa_column=Column("pokemon_id", Integer, ForeignKey("pokemon.pokemon_id")))
+#     pokemon: List[GrupoHuevoDelPokemon] = Relationship(back_populates="grupo_huevo")
+#
+#
+# class GrupoHuevoCreate(SQLModel):
+#     pass
+#
+#
+# class GrupoHuevoDelPokemon(SQLModel, table=True):
+#     pokemon_id: int = Field(foreign_key="pokemon.id", primary_key=True)
+#     egg_group_id: int = Field(foreign_key="grupo_huevo.id", primary_key=True)
+#     pokemon: Pokemon = Relationship(back_populates="grupo_huevo")
+#     grupo_huevo: GrupoHuevo = Relationship(back_populates="pokemon")
+#
+#
+# class Stats(SQLModel, table=True, tablename="stats"):
+#     id: int = Field(sa_column=Column("stat_id", Integer, primary_key=True))
+#     base_stat: int = Field(sa_column=Column("base_stat", Integer, nullable=False))
+#     pokemon_id: int = Field(sa_column=Column("pokemon_id", Integer, ForeignKey("pokemon.pokemon_id")))
+#     pokemon: List[StatsDelPokemon] = Relationship(back_populates="stats")
+#
+#
+# class StatsCreate(SQLModel):
+#     pass
+#
+#
+# class StatsDelPokemon(SQLModel, table=True):
+#     pokemon_id: int = Field(foreign_key="pokemon.id", primary_key=True)
+#     stat_id: int = Field(foreign_key="stats.id", primary_key=True)
+#     pokemon: Pokemon = Relationship(back_populates="stats")
+#     stats: Stats = Relationship(back_populates="pokemon")
+#
+#
+# class MovimientosBase(SQLModel):
+#     tipo: int = Field(sa_column=Column("type_id", Integer, nullable=False))
+#     categoria: int = Field(sa_column=Column("damage_class_id", Integer, nullable=False))
+#     potencia: int = Field(sa_column=Column("power", Integer, nullable=False))
+#     precision: int = Field(sa_column=Column("accuracy", Integer, nullable=False))
+#     usos: int = Field(sa_column=Column("pp", Integer, nullable=False))
+#     generacion: int = Field(sa_column=Column("generation_id", Integer, nullable=False))
+#     efecto: int = Field(sa_column=Column("effect_id", Integer, nullable=False))
+#
+#
+# class Movimientos(SQLModel, table=True, tablename="movimientos_aprendibles"):
+#     id: int = Field(sa_column=Column("move_id", Integer, primary_key=True))
+#     pokemon_id: int = Field(sa_column=Column("pokemon_id", Integer, ForeignKey("pokemon.pokemon_id")))
+#     pokemon: List[MovimientosAprendiblesDelPokemon] = Relationship(back_populates="movimientos")
+#     metodo_aprendizaje: int = Field(sa_column=Column("pokemon_move_method_id", Integer, nullable=False))
+#
+#
+# class MovimientosCreate(MovimientosBase):
+#     pass
+#
+#
+# class MovimientosAprendiblesDelPokemon(SQLModel, table=True, tablename="movimientos_aprendibles"):
+#     pokemon_id: int = Field(foreign_key="pokemon.id", primary_key=True)
+#     move_id: int = Field(foreign_key="movimientos.id", primary_key=True)
+#     pokemon: Pokemon = Relationship(back_populates="movimientos")
+#     movimientos: Movimientos = Relationship(back_populates="pokemon")
+#
+#
+# class DebilidadesBase(SQLModel):
+#     damage_type: int = Field(sa_column=Column("damage_type_id", Integer, nullable=False))
+#     target_type: int = Field(sa_column=Column("target_type_id", Integer, nullable=False))
+#     damage_factor: int = Field(sa_column=Column("damage_factor", Integer, nullable=False))
+#
+#
+# class Debilidades(SQLModel, table=True, tablename="debilidades"):
+#     id: int = Field(sa_column=Column("type_id", Integer, primary_key=True))
+#     pokemon_id: int = Field(sa_column=Column("pokemon_id", Integer, ForeignKey("pokemon.pokemon_id")))
+#     pokemon: List[DebilidadesDelPokemon] = Relationship(back_populates="debilidades")
+#
+#
+# class DebilidadesCreate(DebilidadesBase):
+#     pass
+#
+# class DebilidadesDelPokemon(SQLModel, table=True):
+#     pokemon_id: int = Field(foreign_key="pokemon.id", primary_key=True)
+#     type_id: int = Field(foreign_key="debilidades.id", primary_key=True)
+#     pokemon: Pokemon = Relationship(back_populates="debilidades")
+#     debilidades: Debilidades = Relationship(back_populates="pokemon")
+#
+#
+# class Equipo(SQLModel, table=True, tablename="equipo"):
+#     id: int = Field(sa_column=Column("id", Integer, primary_key=True))
+#     nombre: str = Field(sa_column=Column("identifier", Text, nullable=False))
+#     pokemones: List[EquipoDelPokemon] = Relationship(back_populates="equipo")
+
+
 
 
 class Error(BaseModel):
