@@ -1,7 +1,7 @@
 """Crear tabla movimientos
 
 Revision ID: 73fe80d8d855
-Revises: 
+Revises: 95e3f1435596
 Create Date: 2024-11-04 14:24:38.597170
 
 """
@@ -31,7 +31,7 @@ def upgrade() -> None:
         sa.Column("pp", sa.Integer, nullable=False),
         sa.Column("generation_id", sa.Integer, nullable=False),
         sa.Column("effect_id", sa.Integer, nullable=False),
-        sa.ForeignKeyConstraint(["pokemon_id", ["pokemon.pokemon_id"]]),
+        sa.ForeignKeyConstraint(["pokemon_id"], ["pokemon.pokemon_id"]),
         sa.ForeignKeyConstraint(
             ["pokemon_move_method_id"],
             ["metodo_aprender_movimiento.pokemon_move_method_id"],
