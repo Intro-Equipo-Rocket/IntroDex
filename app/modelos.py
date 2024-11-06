@@ -48,7 +48,7 @@ class Pokemon(BaseModel):
 #     stats: List[StatsDelPokemon] = Relationship(back_populates="pokemon")
 #     movimientos_aprendibles: List[MovimientosAprendiblesDelPokemon] = Relationship(back_populates="pokemon")
 #     debilidades_tipo: List[DebilidadesDelPokemon] = Relationship(back_populates="pokemon")
-#     equipos: List[EquipoDelPokemon] | None = Relationship(back_populates="pokemon")
+#     integrante: List[IntegrantesEquipo] | None = Relationship(back_populates="pokemon")
 #
 #
 # class PokemonCreate(PokemonBase):
@@ -178,6 +178,25 @@ class Pokemon(BaseModel):
 #     type_id: int = Field(foreign_key="debilidades.id", primary_key=True)
 #     pokemon: Pokemon = Relationship(back_populates="debilidades")
 #     debilidades: Debilidades = Relationship(back_populates="pokemon")
+#
+#
+# class IntegrantesEquipo(SQLModel, table=True, tablename="integrantes_equipo"):
+#     id: int = Field(sa_column=Column("member_id", Integer, primary_key=True))
+#     pokemon_id: int = Field(sa_column=Column("pokemon_id", Integer, ForeignKey("pokemon.pokemon_id")))
+#     pokemon: Optional[Pokemon] = Relationship(back_populates="integrante")
+#     equipo_id: int = Field(sa_column=Column("team_id", Integer, ForeignKey("equipo.id")))
+#     equipo: Optional[Equipo] = Relationship(back_populates="integrantes")
+#     movimientos: List[MovimientosDelIntegrante] = Relationship(back_populates="integrante")
+#     naturaleza_id: int = Field(sa_column=Column("nature_id", Integer, ForeignKey("naturaleza.id")))
+#     naturaleza: Naturaleza = Relationship(back_populates="integrante")
+#     evs: Estadisticas
+#
+#
+# class MovimientosDelIntegrante(SQLModel, table=True):
+#     member_id: int = Field(foreign_key="integrantes_equipo.id", primary_key=True)
+#     move_id: int = Field(foreign_key="movimientos.id", primary_key=True)
+#     integrante: Optional[IntegrantesEquipo] = Relationship(back_populates="movimientos")
+#     movimientos: Optional[Movimientos] = Relationship()
 #
 #
 # class Equipo(SQLModel, table=True, tablename="equipo"):
