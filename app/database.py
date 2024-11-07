@@ -9,7 +9,7 @@ from sqlmodel import create_engine, select, Session
 from app.modelos import Pokemon, Movimiento, PreViewPokemon, Naturaleza
 
 
-SQLITE_FILE_PATH = "database.db"
+SQLITE_FILE_PATH = "data/database.db"
 
 engine = create_engine(f"sqlite:///{SQLITE_FILE_PATH}")
 
