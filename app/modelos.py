@@ -84,7 +84,6 @@ class DebilidadesTipo(SQLModel, table=True):
 
 class HabilidadesBase(SQLModel):
     nombre: str = Field(sa_column=Column("identifier", Text, nullable=False))
-    es_oculta: bool = Field(sa_column=Column("is_hidden", Boolean, nullable=False))
 
 
 class Habilidades(HabilidadesBase, table=True):
@@ -100,6 +99,7 @@ class HabilidadesCreate(HabilidadesBase):
 class HabilidadesPokemon(SQLModel, table=True):
     pokemon_id: int = Field(sa_column=Column(Integer, ForeignKey("pokemon.pokemon_id"), primary_key=True))
     ability_id: int = Field(sa_column=Column(Integer, ForeignKey("habilidades.ability_id"), primary_key=True))
+    es_oculta: bool = Field(sa_column=Column("is_hidden", Boolean, nullable=False))
     pokemon: Pokemon = Relationship(back_populates="habilidades")
     habilidades: Habilidades = Relationship(back_populates="pokemon")
 
