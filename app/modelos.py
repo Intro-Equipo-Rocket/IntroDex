@@ -48,7 +48,7 @@ class Pokemon(PokemonBase, table=True):
     habilidades: List["HabilidadesPokemon"] = Relationship(back_populates="pokemon")
     grupo_huevo: List["GrupoHuevoPokemon"] = Relationship(back_populates="pokemon")
     stats: List["StatsDelPokemon"] = Relationship(back_populates="pokemon")
-    movimientos_aprendibles: List["MovimientosPokemon"] = Relationship(back_populates="pokemon")
+    movimientos: List["MovimientosPokemon"] = Relationship(back_populates="pokemon")
     integrante: List["IntegrantesEquipo"] | None = Relationship(back_populates="pokemon")
 
 
@@ -80,6 +80,7 @@ class DebilidadesTipo(SQLModel, table=True):
     damage_type_id: int = Field(sa_column=Column("damage_type_id", Integer, ForeignKey("tipo_pokemon.type_id"), primary_key=True))
     target_type_id: int = Field(sa_column=Column("target_type_id", Integer, primary_key=True))
     damage_factor: int = Field(sa_column=Column("damage_factor", Integer, nullable=True))
+    tipos: TiposPokemon = Relationship(back_populates="debilidades")
 
 class HabilidadesBase(SQLModel):
     nombre: str = Field(sa_column=Column("identifier", Text, nullable=False))
@@ -89,7 +90,7 @@ class HabilidadesBase(SQLModel):
 class Habilidades(HabilidadesBase, table=True):
     __tablename__ = "habilidades"
     id: int = Field(sa_column=Column("ability_id", Integer, primary_key=True))
-    pokemones: List["HabilidadesPokemon"] = Relationship(back_populates="habilidades")
+    pokemon: List["HabilidadesPokemon"] = Relationship(back_populates="habilidades")
 
 
 class HabilidadesCreate(HabilidadesBase):
@@ -157,6 +158,7 @@ class Movimientos(SQLModel, table=True):
     __tablename__ = "movimientos"
     id: int = Field(sa_column=Column("move_id", Integer, primary_key=True))
     pokemon: List["MovimientosPokemon"] = Relationship(back_populates="movimientos")
+    integrante: List["IntegrantesEquipo"] = Relationship(back_populates="movimientos")
 
 
 class MovimientosCreate(MovimientosBase):
@@ -179,8 +181,7 @@ class MovimientosPokemon(SQLModel, table=True):
 class MetodoAprenderMovimiento(SQLModel, table=True):
     __tablename__ = "metodo_aprender_movimiento"
     pokemon_move_method_id: int = Field(sa_column=Column("pokemon_move_method_id", Integer, nullable=False, primary_key=True))
-    movimientos: Optional["Movimientos"] = Relationship(back_populates="metodo_aprendizaje")
-    move_id: int = Field(sa_column=Column("move_id", Integer, ForeignKey("movimientos.move_id"), primary_key=True))
+    move_id: int = Field(sa_column=Column("move_id", Integer, ForeignKey("movimientos_aprendibles.move_id"), primary_key=True))
 
 
 class CategoriaMovimiento(SQLModel, table=True):
@@ -189,7 +190,7 @@ class CategoriaMovimiento(SQLModel, table=True):
     nombre: str = Field(sa_column=Column("identifier", Text, nullable=False))
 
 
-class EfectorMovimiento(SQLModel, table=True):
+class EfectoMovimiento(SQLModel, table=True):
     __tablename__ = "efecto"
     id: int = Field(sa_column=Column("effect_id", Integer, primary_key=True))
     descripcion: str = Field(sa_column=Column("description", Text, nullable=False))
@@ -228,29 +229,28 @@ class Estadisticas(SQLModel, table=True):
         sa_column=Column(
             "member_id",
             Integer,
-            ForeignKey("integrantes_equipo.member_id"),
+            ForeignKey("integrante_equipo.member_id"),
             primary_key=True,
         )
     )
+    integrante: "IntegrantesEquipo" = Relationship(back_populates="estadisticas")
 
 
 class IntegrantesEquipo(SQLModel, table=True):
     __tablename__ = "integrante_equipo"
     id: int = Field(sa_column=Column("member_id", Integer, primary_key=True))
     pokemon_id: int = Field(
-        sa_column=Column("pokemon_id", Integer, ForeignKey("pokemon.pokemon_id"))
+        sa_column=Column("pokemon_id", Integer, ForeignKey("pokemon.pokemon_id"), primary_key=True)
     )
     pokemon: Optional[Pokemon] = Relationship(back_populates="integrante")
     equipo_id: int = Field(
         sa_column=Column("team_id", Integer, ForeignKey("equipo.id"))
     )
     equipo: Optional["Equipo"] = Relationship(back_populates="integrantes")
-    move_id: int = Field(sa_column=Column("move_id", Integer, ForeignKey("movimientos.move_id")))
+    move_id: int = Field(sa_column=Column("move_id", Integer, ForeignKey("movimientos.move_id"), primary_key=True))
     movimientos: List["Movimientos"] = Relationship(back_populates="integrante")
-    naturaleza_id: int = Field(sa_column=Column("nature_id", Integer, ForeignKey("naturaleza.id")))
-    __table_args__ = (
-        PrimaryKeyConstraint("member_id", "pokemon_id", "move_id", "nature_id"),
-    )
+    naturaleza_id: int = Field(sa_column=Column("nature_id", Integer, ForeignKey("naturaleza.id"), primary_key=True))
+    estadisticas: Estadisticas = Relationship(back_populates="integrante")
 
 
 class Equipo(SQLModel, table=True):
