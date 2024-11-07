@@ -83,6 +83,15 @@ def get_pokemon(id: int) -> Pokemon:
     pokemones.remove(pokemon)
     return pokemon
 
+
+# router.delete("/delete/{id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
+# def delete(session: SessionDep, id: int) -> Pokemon:
+#    pokemon = buscar_pokemon(session, id)
+#    session.delete(pokemon)
+#    session.commit()
+#    return pokemon
+
+
 def buscar_pokemon(id: int) -> Pokemon:
     for pokemon in pokemones:
         if pokemon.id == id:
@@ -92,14 +101,17 @@ def buscar_pokemon(id: int) -> Pokemon:
         detail="Pokemon no encontrado o ya eliminado.",
     )
 
+
 @router.get("/{pokemon_id}/movimientos")
 def obtener_movimientos_del_pokemon(pokemon_id: int) -> list[Movimiento]:
     pokemon = buscar_pokemon(pokemon_id)
     movim_pkm = []
-    for id_movim_del_pkm in (pokemon.movimientos_aprendibles_evolucion 
-                            + pokemon.movimientos_aprendibles_huevo
-                            + pokemon.movimientos_aprendibles_nivel
-                            + pokemon.movimientos_aprendibles_tms):
+    for id_movim_del_pkm in (
+        pokemon.movimientos_aprendibles_evolucion
+        + pokemon.movimientos_aprendibles_huevo
+        + pokemon.movimientos_aprendibles_nivel
+        + pokemon.movimientos_aprendibles_tms
+    ):
         for movimientos in Moves:
             if id_movim_del_pkm == movimientos.id:
                 movim_pkm.append(movimientos)
