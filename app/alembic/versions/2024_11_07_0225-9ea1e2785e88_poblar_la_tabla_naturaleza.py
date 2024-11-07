@@ -21,16 +21,16 @@ down_revision: Union[str, None] = "a58fa4ef5f91"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
+naturaleza_table = table(
+    "naturaleza",
+    column("id", Integer),
+    column("identifier", String),
+    column("decreased_stat_id", Integer),
+    column("increased_stat_id", Integer),
+)
+
 
 def upgrade() -> None:
-    naturaleza_table = table(
-        "naturaleza",
-        column("id", Integer),
-        column("identifier", String),
-        column("decreased_stat_id", Integer),
-        column("increased_stat_id", Integer),
-    )
-
     conn = op.get_bind()
 
     with open("data/natures.csv", newline="") as csvfile:
@@ -47,4 +47,5 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.execute("DELETE FROM naturaleza")
+    conn = op.get_bind()
+    conn.execute(sa.text("DELETE FROM naturaleza"))
