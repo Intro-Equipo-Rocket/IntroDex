@@ -98,14 +98,14 @@ class TiposDelPokemon(SQLModel, table=True):
     tipos: Tipos = Relationship(back_populates="pokemon")
 
 
-class HabiliadesBase(SQLModel):
+class HabilidadesBase(SQLModel):
     nombre: str = Field(sa_column=Column("identifier", Text, nullable=False))
     es_habilidad_oculta: bool = Field(
-        sa_column=Column("is_hiden", Integer, nullable=False)
+        sa_column=Column("is_hiden", Integer, nullable=False, ge=0, le=1)
     )
 
 
-class Habilidades(HabiliadesBase, table=True):
+class Habilidades(HabilidadesBase, table=True):
     __tablename__ = "habilidades"
     id: int = Field(sa_column=Column("ability_id", Integer, primary_key=True))
     pokemon_id: int = Field(
@@ -116,7 +116,7 @@ class Habilidades(HabiliadesBase, table=True):
     )
 
 
-class HabilidadesCreate(HabiliadesBase):
+class HabilidadesCreate(HabilidadesBase):
     pass
 
 
@@ -283,13 +283,13 @@ class Naturaleza(NaturalezaBase, table=True):
     id: int = Field(sa_column=Column("id", Integer, primary_key=True))
 
 
-# class Estadisticas(BaseModel):
-#     vida: int
-#     ataque: int
-#     defensa: int
-#     ataque_especial: int
-#     defensa_especial: int
-#     velocidad: int
+class Estadisticas(BaseModel):
+    vida: int
+    ataque: int
+    defensa: int
+    ataque_especial: int
+    defensa_especial: int
+    velocidad: int
 
 
 class EstadisticasBase(SQLModel):
@@ -334,7 +334,7 @@ class IntegrantesEquipo(SQLModel, table=True):
     naturaleza_id: int = Field(
         sa_column=Column("nature_id", Integer, ForeignKey("naturaleza.id"))
     )
-    evs: Estadisticas = Relationship(back_populates="integrantes_equipo")
+    evs: Estadisticas
 
 
 class MovimientosDelIntegrante(SQLModel, table=True):
