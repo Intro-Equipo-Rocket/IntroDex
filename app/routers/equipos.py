@@ -4,8 +4,8 @@ from app.db.equipos_db import *
 from app.db.naturaleza_db import *
 from app.routers.pokemon import *
 from typing import List
-# from sqlmodel import Session, select
-# from app.database import SessionDep
+from sqlmodel import Session, select
+from app.database import SessionDep
 
 router = APIRouter()
 
@@ -23,103 +23,110 @@ def obtener_equipos(pagina: int, cantidad_equipos: int = 10):
     return equipos_pagina
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def crear_equipo(id_equipo: int, nombre_equipo: str, generacion_equipo: int, # , session: SessionDep
+def crear_equipo(id_equipo: int, nombre_equipo: str, generacion_equipo: int, session: SessionDep,
                  id_pkm_1: int=None, movimientos_pkm_1: list[int]=None, id_naturaleza_1: int=None, evs_pkm_1: Estadisticas=Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
                  id_pkm_2: int=None, movimientos_pkm_2: list[int]=None, id_naturaleza_2: int=None, evs_pkm_2: Estadisticas=Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
                  id_pkm_3: int=None, movimientos_pkm_3: list[int]=None, id_naturaleza_3: int=None, evs_pkm_3: Estadisticas=Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
                  id_pkm_4: int=None, movimientos_pkm_4: list[int]=None, id_naturaleza_4: int=None, evs_pkm_4: Estadisticas=Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
                  id_pkm_5: int=None, movimientos_pkm_5: list[int]=None, id_naturaleza_5: int=None, evs_pkm_5: Estadisticas=Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
-                 id_pkm_6: int=None, movimientos_pkm_6: list[int]=None, id_naturaleza_6: int=None, evs_pkm_6: Estadisticas=Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),) -> Equipo:
-        # query = select(Equipo).where(Equipo.id == id_equipo)
-        # equipo = session.exec(query).first()
-        # if equipo:
-        #     raise HTTPException(
-        #         status_code=status.HTTP_400_BAD_REQUEST, detail="Ese equipo ya existe"
-        #     )
-        # if generacion_equipo not in range(1, 9):
-        #     raise HTTPException(
-        #         status_code=status.HTTP_400_BAD_REQUEST, detail="La generación del equipo no es válida"
-        #     )
-        # nuevo_equipo: Equipo=Equipo(
-        #     id=id_equipo,
-        #     nombre=nombre_equipo,
-        #     pokemones=[],
-        #     generacion=generacion_equipo
-        # )
+                 id_pkm_6: int=None, movimientos_pkm_6: list[int]=None, id_naturaleza_6: int=None, evs_pkm_6: Estadisticas=Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),):
+    
+    query = select(Equipo).where(Equipo.id == id_equipo)
+    equipo = session.exec(query).first()
+    if equipo:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Ese equipo ya existe"
+        )
     if generacion_equipo not in range(1, 9):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="La generación del equipo no es válida"
         )
-    for equipo in equipos:
-        if id_equipo == equipo.id:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Ese equipo ya existe"
-            )
     
     nuevo_equipo: Equipo=Equipo(
         id=id_equipo,
         nombre=nombre_equipo,
-        pokemones=[],
-        generacion=generacion_equipo
+        generacion=generacion_equipo,
+        integrantes=[]
     )
     if id_pkm_1 is not None:
-        asignacion_datos_integrantes(id_pkm_1, generacion_equipo, movimientos_pkm_1, evs_pkm_1, id_naturaleza_1, nuevo_equipo) # , session: SessionDep
+        asignacion_datos_integrantes(id_pkm_1, generacion_equipo, movimientos_pkm_1, evs_pkm_1, id_naturaleza_1, nuevo_equipo, session)
     if id_pkm_2 is not None:
-        asignacion_datos_integrantes(id_pkm_2, generacion_equipo, movimientos_pkm_2, evs_pkm_2, id_naturaleza_2, nuevo_equipo) # , session: SessionDep
+        asignacion_datos_integrantes(id_pkm_2, generacion_equipo, movimientos_pkm_2, evs_pkm_2, id_naturaleza_2, nuevo_equipo, session)
     if id_pkm_3 is not None:
-        asignacion_datos_integrantes(id_pkm_3, generacion_equipo, movimientos_pkm_3, evs_pkm_3, id_naturaleza_3, nuevo_equipo) # , session: SessionDep
+        asignacion_datos_integrantes(id_pkm_3, generacion_equipo, movimientos_pkm_3, evs_pkm_3, id_naturaleza_3, nuevo_equipo, session)
     if id_pkm_4 is not None:
-        asignacion_datos_integrantes(id_pkm_4, generacion_equipo, movimientos_pkm_4, evs_pkm_4, id_naturaleza_4, nuevo_equipo) # , session: SessionDep
+        asignacion_datos_integrantes(id_pkm_4, generacion_equipo, movimientos_pkm_4, evs_pkm_4, id_naturaleza_4, nuevo_equipo, session)
     if id_pkm_5 is not None:
-        asignacion_datos_integrantes(id_pkm_5, generacion_equipo, movimientos_pkm_5, evs_pkm_5, id_naturaleza_5, nuevo_equipo) # , session: SessionDep
+        asignacion_datos_integrantes(id_pkm_5, generacion_equipo, movimientos_pkm_5, evs_pkm_5, id_naturaleza_5, nuevo_equipo, session)
     if id_pkm_6 is not None:
-        asignacion_datos_integrantes(id_pkm_6, generacion_equipo, movimientos_pkm_6, evs_pkm_6, id_naturaleza_6, nuevo_equipo) # , session: SessionDep
+        asignacion_datos_integrantes(id_pkm_6, generacion_equipo, movimientos_pkm_6, evs_pkm_6, id_naturaleza_6, nuevo_equipo, session)
 
-    # session.add(nuevo_equipo)
-    # session.commit()
-    # session.refresh(nuevo_equipo)
-    # return nuevo_equipo
-    equipos.append(nuevo_equipo)
-    return nuevo_equipo
+    session.add(nuevo_equipo)
+    session.commit()
+    session.refresh(nuevo_equipo)
+    query = select(EstadisticasTabla).where(EstadisticasTabla.id == nuevo_equipo.id)
+    evs_integrante = session.exec(query).first()
+    return nuevo_equipo, evs_integrante
     
-def asignacion_datos_integrantes(id_pokemon: int, generacion_equipo, movimientos_seleccionados: list[int], ptos_evs: Estadisticas, id_naturaleza: int, equipo_a_asignar: Equipo) -> None: # , session: SessionDep
-    naturaleza_pkm = obtener_naturaleza_por_id(id_naturaleza) # , session: SessionDep
-    if not verificar_generacion_del_pokemon(id_pokemon, generacion_equipo): # , session: SessionDep
+def asignacion_datos_integrantes(id_pokemon: int, generacion_equipo, movimientos_seleccionados: list[int], ptos_evs: Estadisticas, id_naturaleza: int, equipo_a_asignar: Equipo, session: SessionDep) -> None:
+    naturaleza_pkm = obtener_naturaleza_por_id(id_naturaleza, session)
+
+    if not verificar_generacion_del_pokemon(id_pokemon, generacion_equipo, session):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"El pokemon de id {id_pokemon} no pertenece a la generacion del equipo"
         )
+    
     if movimientos_seleccionados is None or not verificar_movimientos_pokemon(id_pokemon, movimientos_seleccionados): # , session: SessionDep
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"Algun movimiento del pokemon de id {id_pokemon} no son validos o no tiene movimientos"
         )
+    
     if not verificar_evs(ptos_evs):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Los EVs no son validos, asegurarse de que la suma de los EVs no sea mayor a 510 y que cada EV no sea mayor a 255"
         )
     
-    equipo_a_asignar.pokemones.append(IntegranteEquipo(
-            id_pokemon=naturaleza_pkm,
-            pokemon=buscar_pokemon(id_pokemon),
-            movimientos=movimientos_seleccionados,
-            naturaleza=obtener_naturaleza_por_id(id_naturaleza),
-            evs=ptos_evs
+    query = select(IntegrantesEquipo)
+    integrantes = session.exec(query).all()
+    if integrantes:
+        ultimo_integrante = max(integrantes, key=lambda integrante: integrante.id)
+        nuevo_id = ultimo_integrante.id + 1
+    else:
+        nuevo_id = 1
+    
+    equipo_a_asignar.integrantes.append(IntegrantesEquipo(
+        id=nuevo_id,
+        pokemon_id=id_pokemon,
+        pokemon = buscar_pokemon(id_pokemon, session),
+        equipo_id=equipo_a_asignar.id,
+        equipo = equipo_a_asignar,
+        movimientos=movimientos_seleccionados,
+        naturaleza_id=id_naturaleza
         )
     )
-    
-def obtener_naturaleza_por_id(id_naturaleza: int) -> Naturaleza: # , session: SessionDep
-    # query = select(Naturaleza).where(Naturaleza.id == id_naturaleza)
-    # naturaleza = session.exec(query).first()
-    # if not naturaleza:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_404_NOT_FOUND, detail="Naturaleza no encontrada."
-    #     )
-    # return naturaleza
-    for naturaleza in naturalezas:
-        if naturaleza.id == id_naturaleza:
-            return naturaleza
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="Naturaleza no encontrada."
+
+    evs_nuevo_miembro = EstadisticasTabla(
+        id=nuevo_id,
+        vida=ptos_evs.vida,
+        ataque=ptos_evs.ataque,
+        defensa=ptos_evs.defensa,
+        ataque_especial=ptos_evs.ataque_especial,
+        defensa_especial=ptos_evs.defensa_especial,
+        velocidad=ptos_evs.velocidad
     )
+    session.add(evs_nuevo_miembro)
+    session.commit()
+    session.refresh(evs_nuevo_miembro)
+
+    
+def obtener_naturaleza_por_id(id_naturaleza: int, session: SessionDep) -> Naturaleza:
+    query = select(Naturaleza).where(Naturaleza.id == id_naturaleza)
+    naturaleza = session.exec(query).first()
+    if not naturaleza:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Naturaleza no encontrada."
+        )
+    return naturaleza
 
 def verificar_evs(evs: Estadisticas) -> bool:
     if evs.vida > 255 or evs.ataque > 255 or evs.defensa > 255 or evs.ataque_especial > 255 or evs.defensa_especial > 255 or evs.velocidad > 255:
