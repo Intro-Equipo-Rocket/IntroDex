@@ -33,6 +33,9 @@ pokemon_movimientos_table = table(
 def upgrade() -> None:
     conn = op.get_bind()
 
+    with op.batch_alter_table("pokemon_movimientos", schema=None) as batch_op:
+        batch_op.add_column(sa.Column("level", sa.Integer, nullable=True))
+
     with open("data/pokemon_moves.csv", newline="", encoding="utf-8") as moves_file:
         moves_data = csv.DictReader(moves_file)
 
@@ -66,3 +69,6 @@ def upgrade() -> None:
 def downgrade() -> None:
     conn = op.get_bind()
     conn.execute(sa.text("DELETE FROM pokemon_movimientos"))
+
+    with op.batch_alter_table("pokemon_movimientos", schema=None) as batch_op:
+        batch_op.drop_column("level")
