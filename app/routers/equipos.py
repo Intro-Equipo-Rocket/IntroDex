@@ -95,8 +95,7 @@ def asignacion_datos_integrantes(id_pokemon: int, generacion_equipo, id_movimien
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"El pokemon de id {id_pokemon} no pertenece a la generacion del equipo"
         )
-    
-    if id_movimientos_seleccionados is None or not verificar_movimientos_pokemon(id_pokemon, id_movimientos_seleccionados, session):
+    if not verificar_movimientos_pokemon(id_pokemon, id_movimientos_seleccionados, session):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"Algun movimiento del pokemon de id {id_pokemon} no son validos o no tiene movimientos"
         )
@@ -210,6 +209,8 @@ def verificar_generacion_del_pokemon(id_pokemon: int, generacion_equipo: int, se
     return True
 
 def verificar_movimientos_pokemon(id_pokemon: int, id_movimientos: list[int], session: SessionDep) -> bool:
+    if len(id_movimientos) < 1 or len(id_movimientos) > 4:
+        return False
     movimientos_aprendibles = buscar_movimientos_del_pokemon(id_pokemon, session)
     for id_movimiento in id_movimientos:
         if id_movimiento not in [movimiento_pokemon.move_id for movimiento_pokemon in movimientos_aprendibles]:
