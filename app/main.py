@@ -6,8 +6,8 @@ from sqlalchemy import Engine
 from sqlmodel import Session, select
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 
-from .routers import pokemon, movimientos, equipos, naturalezas
-from database import engine, seed
+from app.routers import pokemon  # , movimientos, equipos, naturalezas
+from app.database import engine
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -37,16 +37,15 @@ def main() -> None:
     logger.info("Initializing service")
     init(engine)
     logger.info("Service finished initializing")
-    seed()
 
 
 app = FastAPI()
 
 
 app.include_router(pokemon.router, prefix="/pokemons", tags=["Pokemons"])
-app.include_router(movimientos.router, prefix="/movimientos", tags=["Movimientos"])
-app.include_router(equipos.router, prefix="/equipos", tags=["Equipos"])
-app.include_router(naturalezas.router, prefix="/naturalezas", tags=["Naturaleza"])
+# app.include_router(movimientos.router, prefix="/movimientos", tags=["Movimientos"])
+# app.include_router(equipos.router, prefix="/equipos", tags=["Equipos"])
+# app.include_router(naturalezas.router, prefix="/naturalezas", tags=["Naturaleza"])
 
 
 @app.get("/")
