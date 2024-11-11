@@ -183,15 +183,16 @@ def show_por_name(session: SessionDep, nombre: str) -> PokemonPublic:
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def crear_pokemon(nuevo_pokemon: Pokemon):
-    for pokemon in pokemones:
-        if nuevo_pokemon.id == pokemon.id:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Ese pokemon ya existe"
-            )
-    pokemones.append(nuevo_pokemon)
+def crear_pokemon(nuevo_pokemon: Pokemon, session: SessionDep):
+    pokemon_coincidente = session.exec(select(Pokemon).where(Pokemon.id == nuevo_pokemon.id)).first()
+    if pokemon_coincidente:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="El Pokemon ya existe"
+        )
+    session.add(nuevo_pokemon)
+    session.commit()
+    session.refresh(nuevo_pokemon)
     return nuevo_pokemon
-
 
 @router.delete("/delete/{id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
 def get_pokemon(id: int) -> Pokemon:
