@@ -6,7 +6,7 @@ from fastapi import Depends
 from sqlmodel import create_engine, Session
 
 
-SQLITE_FILE_PATH = "data/database.db"
+SQLITE_FILE_PATH = "app/database.db"
 
 engine = create_engine(f"sqlite:///{SQLITE_FILE_PATH}")
 
