@@ -104,6 +104,8 @@ Para hacer una migración cuando cambies el modelo de datos en el proyecto:
 
 5. **Crea un Pull Request** en GitHub.
 
+## Extras
+
 >**ℹ️ NOTE:** Si experimentas problemas de importación al ejecutar el proyecto, intenta utilizar el siguiente comando para establecer el `PYTHONPATH`:
 >
 > ```bash
