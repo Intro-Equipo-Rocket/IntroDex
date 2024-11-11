@@ -1,8 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from app.modelos import *
-from app.db.pokemons_db import *
-from app.db.movimientos_db import *
-from sqlmodel import Session, select
+from sqlmodel import select
 from app.database import SessionDep
 
 router = APIRouter()
@@ -48,23 +46,139 @@ def obtener_pokemones() -> list[Pokemon]:
     return pokemones
 
 
-@router.get("/id/{id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
-def get_pokemon(id: int) -> Pokemon:
-    for pokemon in pokemones:
-        if pokemon.id == id:
-            return pokemon
+@router.get(
+    "/id/{pokemon_id}",
+    responses={status.HTTP_404_NOT_FOUND: {"model": Error}},
+    response_model=PokemonPublic,
+)
+def show_por_id(session: SessionDep, pokemon_id: int) -> PokemonPublic:
+    pokemon = session.exec(select(Pokemon).where(Pokemon.id == pokemon_id)).first()
+
+    if not pokemon:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Pokemon not found"
+        )
+
+    tipos = session.exec(
+        select(Tipos).join(TiposPokemon).where(TiposPokemon.pokemon_id == pokemon.id)
+    ).all()
+
+    habilidades = session.exec(
+        select(Habilidades)
+        .join(HabilidadesPokemon)
+        .where(HabilidadesPokemon.pokemon_id == pokemon.id)
+    ).all()
+
+    grupo_huevo = session.exec(
+        select(GrupoHuevo)
+        .join(GrupoHuevoPokemon)
+        .where(GrupoHuevoPokemon.species_id == pokemon.especie)
+    ).all()
+
+    grupo_huevo = session.exec(
+        select(GrupoHuevo)
+        .join(GrupoHuevoPokemon)
+        .where(GrupoHuevoPokemon.species_id == pokemon.especie)
+    ).all()
+
+    stats = session.exec(
+        select(StatsDelPokemon).where(StatsDelPokemon.pokemon_id == pokemon.id)
+    ).all()
+
+    movimientos = session.exec(
+        select(Movimientos)
+        .join(MovimientosPokemon)
+        .where(MovimientosPokemon.pokemon_id == pokemon.id)
+    ).all()
+
+    pokemon_public = PokemonPublic(
+        nombre=pokemon.nombre,
+        imagen=pokemon.imagen,
+        altura=pokemon.altura,
+        peso=pokemon.peso,
+        generacion=pokemon.generacion,
+        id_evolucion=pokemon.id_evolucion,
+        imagen_evolucion=pokemon.imagen_evolucion,
+        tipos=tipos,
+        habilidades=habilidades,
+        grupo_huevo=grupo_huevo,
+        stats=stats,
+        movimientos=movimientos,
+    )
+
+    if pokemon_public:
+        return pokemon_public
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="Pokemon no encontrado."
+        status_code=status.HTTP_404_NOT_FOUND, detail="Pokemon not found"
     )
 
 
-@router.get("/nombre/{nombre}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
-def get_pokemon(nombre: str) -> Pokemon:
-    for pokemon in pokemones:
-        if pokemon.nombre.lower() == nombre.lower():
-            return pokemon
+@router.get(
+    "/nombre/{nombre}",
+    responses={status.HTTP_404_NOT_FOUND: {"model": Error}},
+    response_model=PokemonPublic,
+)
+def show_por_name(session: SessionDep, nombre: str) -> PokemonPublic:
+    pokemon = session.exec(
+        select(Pokemon).where(Pokemon.nombre == nombre.lower())
+    ).first()
+
+    if not pokemon:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Pokemon not exist"
+        )
+
+    tipos = session.exec(
+        select(Tipos).join(TiposPokemon).where(TiposPokemon.pokemon_id == pokemon.id)
+    ).all()
+
+    habilidades = session.exec(
+        select(Habilidades)
+        .join(HabilidadesPokemon)
+        .where(HabilidadesPokemon.pokemon_id == pokemon.id)
+    ).all()
+
+    grupo_huevo = session.exec(
+        select(GrupoHuevo)
+        .join(GrupoHuevoPokemon)
+        .where(GrupoHuevoPokemon.species_id == pokemon.especie)
+    ).all()
+
+    grupo_huevo = session.exec(
+        select(GrupoHuevo)
+        .join(GrupoHuevoPokemon)
+        .where(GrupoHuevoPokemon.species_id == pokemon.especie)
+    ).all()
+
+    stats = session.exec(
+        select(StatsDelPokemon).where(StatsDelPokemon.pokemon_id == pokemon.id)
+    ).all()
+
+    movimientos = session.exec(
+        select(Movimientos)
+        .join(MovimientosPokemon)
+        .where(MovimientosPokemon.pokemon_id == pokemon.id)
+    ).all()
+
+    pokemon_public = PokemonPublic(
+        nombre=pokemon.nombre,
+        imagen=pokemon.imagen,
+        altura=pokemon.altura,
+        peso=pokemon.peso,
+        generacion=pokemon.generacion,
+        id_evolucion=pokemon.id_evolucion,
+        imagen_evolucion=pokemon.imagen_evolucion,
+        tipos=tipos,
+        habilidades=habilidades,
+        grupo_huevo=grupo_huevo,
+        stats=stats,
+        movimientos=movimientos,
+    )
+
+    if pokemon_public:
+        return pokemon_public
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="Pokemon no encontrado."
+        status_code=status.HTTP_404_NOT_FOUND, detail="Pokemon not found"
     )
 
 
@@ -84,6 +198,7 @@ def get_pokemon(id: int) -> Pokemon:
     pokemon = buscar_pokemon(id)
     pokemones.remove(pokemon)
     return pokemon
+
 
 def buscar_pokemon(id: int) -> Pokemon:
     for pokemon in pokemones:
