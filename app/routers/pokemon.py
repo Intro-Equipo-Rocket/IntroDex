@@ -31,7 +31,7 @@ def obtener_pokemones() -> list[Pokemon]:
     responses={status.HTTP_404_NOT_FOUND: {"model": Error}},
     response_model=PokemonPublic,
 )
-def show_por_id(session: SessionDep, pokemon_id: int) -> PokemonPublic:
+def show_pokemon_por_id(session: SessionDep, pokemon_id: int) -> PokemonPublic:
     pokemon = session.exec(select(Pokemon).where(Pokemon.id == pokemon_id)).first()
 
     if not pokemon:
@@ -98,7 +98,7 @@ def show_por_id(session: SessionDep, pokemon_id: int) -> PokemonPublic:
     responses={status.HTTP_404_NOT_FOUND: {"model": Error}},
     response_model=PokemonPublic,
 )
-def show_por_name(session: SessionDep, nombre: str) -> PokemonPublic:
+def show_pokemon_por_name(session: SessionDep, nombre: str) -> PokemonPublic:
     pokemon = session.exec(
         select(Pokemon).where(Pokemon.nombre == nombre.lower())
     ).first()
