@@ -88,3 +88,6 @@ def test_get_pokemon_por_id_existente(db_session: Session, client: TestClient) -
     # verificar si no existe un pokemon.
     response = client.get("/pokemons/id/9999999999999999")
     assert response.status_code == 404
+
+    response = client.get("/pokemons/nombre/dadafgadasdafasd")
+    assert response.status_code == 404
