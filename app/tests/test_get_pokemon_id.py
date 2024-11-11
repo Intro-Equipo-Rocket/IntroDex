@@ -1,103 +1,90 @@
-import pytest
 from fastapi.testclient import TestClient
-from sqlmodel import Session, SQLModel, create_engine
-from sqlmodel.pool import StaticPool
-from typing import Generator
+from sqlmodel import Session
 
-from app.modelos import (
-    Pokemon,
-    Tipos,
-    TiposPokemon,
-    Habilidades,
-    HabilidadesPokemon,
-    GrupoHuevo,
-    GrupoHuevoPokemon,
-    StatsDelPokemon,
-    Movimientos,
-    MovimientosPokemon,
-    PokemonPublic,
-)
-from app.main import app
-from app.database import get_session
+from app.modelos import *
 
 
-@pytest.fixture(name="engine")
-def engine_fixture():
-    return create_engine(
-        "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
+def test_get_pokemon_por_id_existente(db_session: Session, client: TestClient) -> None:
+    db_session.add_all(
+        [
+            TiposPokemon(type_id=1, pokemon_id=132),
+        ]
     )
+    db_session.commit()
 
-
-@pytest.fixture(name="session")
-def session_fixture(engine: create_engine) -> Generator[Session, None, None]:
-    SQLModel.metadata.create_all(engine)
-    with Session(engine) as session:
-        yield session
-
-
-@pytest.fixture(name="client")
-def client_fixture(session: Session) -> Generator[TestClient, None, None]:
-    def get_session_override():
-        return session
-
-    app.dependency_overrides[get_session] = get_session_override
-    with TestClient(app) as client:
-        yield client
-    app.dependency_overrides.clear()
-
-
-def test_get_pokemon_por_id(session: Session, client: TestClient) -> None:
-    # Crear tipos de ejemplo
-    tipo_agua = Tipos(id=11, nombre="Agua")
-    tipo_siniestro = Tipos(id=17, nombre="Siniestro")
-    session.add(tipo_agua)
-    session.add(tipo_siniestro)
-    session.commit()
-
-    # Asociaciones de tipos con el Pokémon
-    tipos_pokemon = [
-        TiposPokemon(type_id=11, pokemon_id=1),
-        TiposPokemon(type_id=17, pokemon_id=1),
-    ]
-    session.add_all(tipos_pokemon)
-    session.commit()
-
-    # Crear el Pokémon de prueba
-    pokemon_test = Pokemon(
-        id=0,
-        nombre="pruebamon",
-        imagen="https://example.com/pruebamon.png",
-        altura=999,
-        peso=1,
-        especie=25,
-        generacion=99,
-        id_evolucion=None,
-        imagen_evolucion="https://example.com/pruebamon_evolucion.png",
-        tipos=tipos_pokemon,
-        habilidades=[],
-        grupo_huevo=[],
-        stats=[],
-        movimientos=[],
+    db_session.add_all(
+        [
+            HabilidadesPokemon(pokemon_id=132, ability_id=7, es_oculta=False),
+            HabilidadesPokemon(pokemon_id=132, ability_id=150, es_oculta=True),
+        ]
     )
-    session.add(pokemon_test)
-    session.commit()
+    db_session.commit()
 
-    # Realizar la solicitud GET al endpoint
-    response = client.get("/nombre/pruebamon")
+    db_session.add_all(
+        [
+            GrupoHuevoPokemon(species_id=13, egg_group_id=13),
+        ]
+    )
+    db_session.commit()
+
+    db_session.add_all(
+        [
+            MovimientosPokemon(pokemon_id=132, move_id=144, id_metodo=1, nivel=0),
+        ]
+    )
+    db_session.commit()
+
+    db_session.add_all(
+        [
+            StatsDelPokemon(pokemon_id=132, stat_id=1, base_stat=48),
+            StatsDelPokemon(pokemon_id=132, stat_id=2, base_stat=48),
+            StatsDelPokemon(pokemon_id=132, stat_id=3, base_stat=48),
+            StatsDelPokemon(pokemon_id=132, stat_id=4, base_stat=48),
+            StatsDelPokemon(pokemon_id=132, stat_id=5, base_stat=48),
+            StatsDelPokemon(pokemon_id=132, stat_id=6, base_stat=48),
+        ]
+    )
+    db_session.commit()
+
+    # verificar si puede obtener a ditto por pokemon_id.
+    response = client.get("/pokemons/id/132")
     assert response.status_code == 200
+
     data = response.json()
 
-    # Validar la estructura de la respuesta
-    assert data["nombre"] == "pruebamon"
-    assert data["imagen"] == "https://example.com/pruebamon.png"
-    assert data["altura"] == 999
-    assert data["peso"] == 1
-    assert data["generacion"] == 99
+    assert data["nombre"] == "ditto"
+    assert (
+        data["imagen"]
+        == "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/132.png"
+    )
+    assert data["altura"] == 3
+    assert data["peso"] == 40
+    assert data["generacion"] == 1
     assert data["id_evolucion"] is None
-    assert data["imagen_evolucion"] == "https://example.com/pruebamon_evolucion.png"
-    assert len(data["tipos"]) == 2
-    assert data["tipos"][0]["id"] == 11
-    assert data["tipos"][0]["nombre"] == "Agua"
-    assert data["tipos"][1]["id"] == 17
-    assert data["tipos"][1]["nombre"] == "Siniestro"
-    # Puedes añadir más aserciones para otras relaciones si es necesario
+    assert data["imagen_evolucion"] == ""
+
+    assert len(data["tipos"]) == 1
+    assert data["tipos"][0]["nombre"] == "Normal"
+
+    assert len(data["habilidades"]) == 2
+    assert sorted([hab["nombre"] for hab in data["habilidades"]]) == [
+        "Flexibilidad",
+        "Impostor",
+    ]
+
+    assert len(data["grupo_huevo"]) == 1
+    assert data["grupo_huevo"][0]["nombre"] == "Ditto"
+
+    for stat in data["stats"]:
+        assert stat["base_stat"] == 48
+
+    assert len(data["movimientos"]) == 1
+    assert data["movimientos"][0]["nombre"] == "Transformación"
+
+    # verificar si puede obtener a ditto por identifier.
+    response = client.get("/pokemons/nombre/ditto")
+    assert response.status_code == 200
+
+    # verificar si no existe un pokemon.
+    response = client.get("/pokemons/id/9999999999999999")
+    assert response.status_code == 404
