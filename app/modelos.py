@@ -66,6 +66,9 @@ class Tipos(SQLModel, table=True):
 class TiposCreate(SQLModel):
     pass
 
+class TiposPublic(SQLModel):
+    nombre: str
+
 class TiposPokemon(SQLModel, table=True):
     __tablename__ = "tipo_pokemon"
     type_id: int = Field(sa_column=Column(Integer, ForeignKey("tipos.type_id"), primary_key=True))
@@ -147,19 +150,34 @@ class StatsDelPokemon(SQLModel, table=True):
 class MovimientosBase(SQLModel):
     nombre: str = Field(sa_column=Column("identifier", Text, nullable=False))
     tipo: int = Field(sa_column=Column("type_id", Integer, ForeignKey("tipos.type_id"), nullable=False))
-    categoria: int = Field(sa_column=Column("damage_class_id", Integer, nullable=False))
+    categoria: int = Field(sa_column=Column("damage_class_id", Integer, ForeignKey("categoria.move_damage_class_id"), nullable=False))
     potencia: int = Field(sa_column=Column("power", Integer, nullable=False))
     precision: int = Field(sa_column=Column("accuracy", Integer, nullable=False))
     usos: int = Field(sa_column=Column("pp", Integer, nullable=False))
     generacion: int = Field(sa_column=Column("generation_id", Integer, nullable=False))
-    efecto: int = Field(sa_column=Column("effect_id", Integer, nullable=False))
+    efecto: int = Field(sa_column=Column("effect_id", Integer, ForeignKey("efecto.effect_id"), nullable=False))
 
 
 class Movimientos(MovimientosBase, table=True):
     __tablename__ = "movimiento"
     id: int = Field(sa_column=Column("move_id", Integer, primary_key=True))
+    class_tipo: Tipos = Relationship()
+    class_categoria: "CategoriaMovimiento" = Relationship()
+    class_efecto: "EfectoMovimiento" = Relationship()
     pokemon: List["MovimientosPokemon"] = Relationship(back_populates="movimientos")
     integrante: List["IntegrantesEquipo"] = Relationship(back_populates="movimientos", sa_relationship_kwargs={"primaryjoin": "Movimientos.id == IntegrantesEquipo.move_id"})
+
+
+class MovimientosPublic(SQLModel):
+    id: int
+    nombre: str
+    class_tipo: TiposPublic
+    class_categoria: "CategoriaMovimientoPublic"
+    potencia: Optional[int]
+    precision: Optional[int]
+    usos: int
+    generacion: int
+    class_efecto: "EfectoMovimientoPublic"
 
 
 class MovimientosCreate(MovimientosBase):
@@ -177,7 +195,14 @@ class MovimientosPokemon(SQLModel, table=True):
     pokemon: Pokemon = Relationship(back_populates="movimientos")
     movimientos: Movimientos = Relationship(back_populates="pokemon")
     id_metodo: int = Field(sa_column=Column("pokemon_move_method_id", Integer, ForeignKey("metodo_aprender_movimiento.pokemon_move_method_id")))
+    metodo: "MetodoAprenderMovimiento" = Relationship()
     nivel: int = Field(sa_column=Column("level", Integer))
+
+
+class MovimientosPokemonPublic(SQLModel):
+    movimientos: MovimientosPublic
+    metodo: "MetodoAprenderMovimientoPublic"
+    nivel: int
 
 
 class MetodoAprenderMovimiento(SQLModel, table=True):
@@ -186,16 +211,28 @@ class MetodoAprenderMovimiento(SQLModel, table=True):
     nombre: str = Field(sa_column=Column("identifier", Text, nullable=False))
 
 
+class MetodoAprenderMovimientoPublic(SQLModel):
+    nombre: str
+
+
 class CategoriaMovimiento(SQLModel, table=True):
     __tablename__ = "categoria"
     id: int = Field(sa_column=Column("move_damage_class_id", Integer, primary_key=True))
     nombre: str = Field(sa_column=Column("identifier", Text, nullable=False))
 
 
+class CategoriaMovimientoPublic(SQLModel):
+    nombre: str
+
+
 class EfectoMovimiento(SQLModel, table=True):
     __tablename__ = "efecto"
     id: int = Field(sa_column=Column("effect_id", Integer, primary_key=True))
     descripcion: str = Field(sa_column=Column("description", Text, nullable=False))
+
+
+class EfectoMovimientoPublic(SQLModel):
+    descripcion: str
 
 
 class NaturalezaBase(SQLModel):

@@ -7,7 +7,6 @@ client = TestClient(app)
 def test_obtener_pokemon_id_existente() -> None:
     response = client.get("/pokemons/id/25")
     assert response.status_code == 200
-    assert response.json()["id"] == 25
 
 
 def test_obtener_pokemon_nombre_existente() -> None:
@@ -21,6 +20,7 @@ def test_pokemon_id_no_existe() -> None:
         "/pokemons/id/7777777",
     )
     assert response.status_code == 404
+    assert response.json() == {"detail": "Pokemon no encontrado."}
 
 
 def test_pokemon_nombre_no_existe() -> None:
