@@ -6,30 +6,62 @@ from app.database import SessionDep
 router = APIRouter()
 
 
-@router.get("/", response_model=list[Pokemon])
-def obtener_pokemones() -> list[Pokemon]:
-    if not pokemones:
+@router.get("/", response_model=list[PokemonPublic])
+def get_pokemons(session: SessionDep) -> list[PokemonPublic]:
+    pokemons = session.exec(select(Pokemon)).all()
+
+    if not pokemons:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No hay pokemones disponibles",
+            status_code=status.HTTP_404_NOT_FOUND, detail="No Pokémon found"
         )
-    return pokemones
 
+    pokemons_public = []
+    for pokemon in pokemons:
+        tipos = session.exec(
+            select(Tipos)
+            .join(TiposPokemon)
+            .where(TiposPokemon.pokemon_id == pokemon.id)
+        ).all()
 
-# def obtener_pokemones(session: SessionDep) -> list[Pokemon]:
-# query = select(Pokemon)
-# pokemones = session.execute(query)
-# return pokemones
+        habilidades = session.exec(
+            select(Habilidades)
+            .join(HabilidadesPokemon)
+            .where(HabilidadesPokemon.pokemon_id == pokemon.id)
+        ).all()
 
+        grupo_huevo = session.exec(
+            select(GrupoHuevo)
+            .join(GrupoHuevoPokemon)
+            .where(GrupoHuevoPokemon.species_id == pokemon.especie)
+        ).all()
 
-@router.get("/id/{id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
-def get_pokemon(id: int) -> Pokemon:
-    for pokemon in pokemones:
-        if pokemon.id == id:
-            return pokemon
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="Pokemon no encontrado."
-    )
+        stats = session.exec(
+            select(StatsDelPokemon).where(StatsDelPokemon.pokemon_id == pokemon.id)
+        ).all()
+
+        movimientos = session.exec(
+            select(Movimientos)
+            .join(MovimientosPokemon)
+            .where(MovimientosPokemon.pokemon_id == pokemon.id)
+        ).all()
+
+        pokemon_public = PokemonPublic(
+            nombre=pokemon.nombre,
+            imagen=pokemon.imagen,
+            altura=pokemon.altura,
+            peso=pokemon.peso,
+            generacion=pokemon.generacion,
+            id_evolucion=pokemon.id_evolucion,
+            imagen_evolucion=pokemon.imagen_evolucion,
+            tipos=tipos,
+            habilidades=habilidades,
+            grupo_huevo=grupo_huevo,
+            stats=stats,
+            movimientos=movimientos,
+        )
+        pokemons_public.append(pokemon_public)
+
+    return pokemons_public
 
 
 @router.get("/nombre/{nombre}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
@@ -40,16 +72,6 @@ def get_pokemon(nombre: str) -> Pokemon:
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND, detail="Pokemon no encontrado."
     )
-
-
-@router.get("/", response_model=list[Pokemon])
-def obtener_pokemones() -> list[Pokemon]:
-    if not pokemones:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No hay pokemones disponibles",
-        )
-    return pokemones
 
 
 @router.get(
