@@ -30,7 +30,7 @@ def get_pokemon(id: int) -> Movimiento:
     responses={status.HTTP_404_NOT_FOUND: {"model": Error}},
     response_model=MovimientosPublic,
 )
-def show_por_id(session: SessionDep, move_id: int) -> MovimientosPublic:
+def show_movimiento_por_id(session: SessionDep, move_id: int) -> MovimientosPublic:
     movimiento = session.exec(
         select(Movimientos).where(Movimientos.id == move_id)
     ).first()
@@ -52,7 +52,7 @@ def show_por_id(session: SessionDep, move_id: int) -> MovimientosPublic:
     responses={status.HTTP_404_NOT_FOUND: {"model": Error}},
     response_model=MovimientosPublic,
 )
-def show_por_id(session: SessionDep, nombre: str) -> MovimientosPublic:
+def show_nombre_por_nombre(session: SessionDep, nombre: str) -> MovimientosPublic:
     movimiento = session.exec(
         select(Movimientos).where(Movimientos.nombre == nombre)
     ).first()
