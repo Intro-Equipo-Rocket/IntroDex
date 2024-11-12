@@ -382,18 +382,37 @@ def get_pokemon(id: int, session: SessionDep) -> Pokemon:
     session.commit()
     return pokemon
 
+def buscar_pokemon(id: int) -> Pokemon:
+    for pokemon in pokemones:
+        if pokemon.id == id:
+            return pokemon
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Pokemon no encontrado o ya eliminado.",
+    )
 
-@router.get("/{pokemon_id}/movimientos")
-def obtener_movimientos_del_pokemon(pokemon_id: int) -> list[Movimiento]:
-    pokemon = buscar_pokemon(pokemon_id)
-    movim_pkm = []
-    for id_movim_del_pkm in (
-        pokemon.movimientos_aprendibles_evolucion
-        + pokemon.movimientos_aprendibles_huevo
-        + pokemon.movimientos_aprendibles_nivel
-        + pokemon.movimientos_aprendibles_tms
-    ):
-        for movimientos in Moves:
-            if id_movim_del_pkm == movimientos.id:
-                movim_pkm.append(movimientos)
-    return movim_pkm
+@router.get("/{pokemon_id}/movimientos", response_model=list[MovimientosPokemonPublic])
+def obtener_movimientos_del_pokemon(pokemon_id: int, session: SessionDep) -> list[MovimientosPokemon]:
+    verificar_pkm(pokemon_id, session)
+    pokemon_movimientos = session.exec(select(MovimientosPokemon).where(MovimientosPokemon.pokemon_id == pokemon_id)).all()
+    if not pokemon_movimientos:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="El pokemon no tiene movimientos.",
+        )
+    for pokemon_movimiento in pokemon_movimientos:
+        pokemon_movimiento.movimientos = session.exec(select(Movimientos).where(Movimientos.id == pokemon_movimiento.move_id)).first()
+        pokemon_movimiento.movimientos.class_tipo = session.exec(select(Tipos).where(Tipos.id == pokemon_movimiento.movimientos.tipo)).first()
+        pokemon_movimiento.movimientos.class_categoria = session.exec(select(CategoriaMovimiento).join(Movimientos).where(CategoriaMovimiento.id == pokemon_movimiento.movimientos.categoria)).first()
+        pokemon_movimiento.movimientos.class_efecto = session.exec(select(EfectoMovimiento).join(Movimientos).where(EfectoMovimiento.id == pokemon_movimiento.movimientos.efecto)).first()
+        pokemon_movimiento.metodo = session.exec(select(MetodoAprenderMovimiento).where(MetodoAprenderMovimiento.pokemon_move_method_id == pokemon_movimiento.id_metodo)).first()
+    return pokemon_movimientos
+
+def verificar_pkm(pokemon_id: int, session: SessionDep) -> bool:
+    pokemon = session.exec(select(Pokemon).where(Pokemon.id == pokemon_id)).first()
+    if not pokemon:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Pokemon no encontrado.",
+        )
+    return True
