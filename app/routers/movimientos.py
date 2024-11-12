@@ -7,6 +7,18 @@ from typing import List
 router = APIRouter()
 
 
+def verificar_move_id(move_id: int, session: SessionDep) -> bool:
+    movimiento = session.exec(
+        select(Movimientos).where(Movimientos.id == move_id)
+    ).first()
+    if not movimiento:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Movimiento no encontrado.",
+        )
+    return True
+
+
 @router.get(
     "/{id}/pokemon",
     responses={status.HTTP_404_NOT_FOUND: {"model": Error}},
@@ -76,13 +88,45 @@ def show_por_id(session: SessionDep, move_id: int) -> List[PokemonPublic]:
     return pokemones
 
 
-def verificar_move_id(move_id: int, session: SessionDep) -> bool:
+@router.get(
+    "/id/{move_id}",
+    responses={status.HTTP_404_NOT_FOUND: {"model": Error}},
+    response_model=MovimientosPublic,
+)
+def show_movimiento_por_id(session: SessionDep, move_id: int) -> MovimientosPublic:
     movimiento = session.exec(
         select(Movimientos).where(Movimientos.id == move_id)
     ).first()
+
     if not movimiento:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Movimiento no encontrado.",
+            status_code=status.HTTP_404_NOT_FOUND, detail="Movimiento not found"
         )
-    return True
+
+    if movimiento:
+        return movimiento
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="Movimiento not found"
+    )
+
+
+@router.get(
+    "/nombre/{nombre}",
+    responses={status.HTTP_404_NOT_FOUND: {"model": Error}},
+    response_model=MovimientosPublic,
+)
+def show_nombre_por_nombre(session: SessionDep, nombre: str) -> MovimientosPublic:
+    movimiento = session.exec(
+        select(Movimientos).where(Movimientos.nombre == nombre)
+    ).first()
+
+    if not movimiento:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Movimiento not found"
+        )
+
+    if movimiento:
+        return movimiento
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="Movimiento not found"
+    )
