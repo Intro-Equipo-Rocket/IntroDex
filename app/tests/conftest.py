@@ -59,6 +59,47 @@ def db_session_fixture():
 
         session.add_all(
             [
+                TiposPokemon(type_id=1, pokemon_id=132),
+            ]
+        )
+        session.commit()
+
+        session.add_all(
+            [
+                HabilidadesPokemon(pokemon_id=132, ability_id=7, es_oculta=False),
+                HabilidadesPokemon(pokemon_id=132, ability_id=150, es_oculta=True),
+            ]
+        )
+        session.commit()
+
+        session.add_all(
+            [
+                GrupoHuevoPokemon(species_id=13, egg_group_id=13),
+            ]
+        )
+        session.commit()
+
+        session.add_all(
+            [
+                MovimientosPokemon(pokemon_id=132, move_id=144, id_metodo=1, nivel=0),
+            ]
+        )
+        session.commit()
+
+        session.add_all(
+            [
+                StatsDelPokemon(pokemon_id=132, stat_id=1, base_stat=48),
+                StatsDelPokemon(pokemon_id=132, stat_id=2, base_stat=48),
+                StatsDelPokemon(pokemon_id=132, stat_id=3, base_stat=48),
+                StatsDelPokemon(pokemon_id=132, stat_id=4, base_stat=48),
+                StatsDelPokemon(pokemon_id=132, stat_id=5, base_stat=48),
+                StatsDelPokemon(pokemon_id=132, stat_id=6, base_stat=48),
+            ]
+        )
+        session.commit()
+
+        session.add_all(
+            [
                 tipo_normal,
                 habilidad_flexibilidad,
                 habilidad_impostor,
