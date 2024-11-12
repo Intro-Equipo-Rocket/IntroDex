@@ -83,6 +83,22 @@ class PokemonPublic(SQLModel):
     movimientos: List["Movimientos"]
 
 
+class PokemonCreatePublic(SQLModel):
+    imagen: str
+    nombre: str
+    altura: int
+    peso: int
+    especie: int
+    generacion: int
+    id_evolucion: Optional[int]
+    imagen_evolucion: str
+    tipos: List["TiposPokemonPublic"]
+    habilidades: List["HabilidadesPokemonPublic"]
+    grupo_huevo: List["GrupoHuevoPokemonPublic"]
+    stats: List["StatsDelPokemonPublic"]
+    movimientos: List["MovimientosPokemonPublic"]
+
+
 class PokemonCreate(PokemonBase):
     pass
 
@@ -92,6 +108,10 @@ class Tipos(SQLModel, table=True):
     id: int = Field(sa_column=Column("type_id", Integer, primary_key=True))
     nombre: str = Field(sa_column=Column("identifier", Text, nullable=False))
     pokemon: List["TiposPokemon"] = Relationship(back_populates="tipos")
+
+
+class TiposPublic(SQLModel):
+    nombre: str
 
 
 class TiposCreate(SQLModel):
@@ -109,6 +129,10 @@ class TiposPokemon(SQLModel, table=True):
     pokemon: Pokemon = Relationship(back_populates="tipos")
     tipos: Tipos = Relationship(back_populates="pokemon")
     debilidades: List["DebilidadesTipo"] = Relationship(back_populates="tipos")
+
+
+class TiposPokemonPublic(SQLModel):
+    tipos: TiposPublic
 
 
 class DebilidadesTipo(SQLModel, table=True):
@@ -144,6 +168,10 @@ class HabilidadesCreate(HabilidadesBase):
     pass
 
 
+class HabilidadesPublic(SQLModel):
+    nombre: str
+
+
 class HabilidadesPokemon(SQLModel, table=True):
     __tablename__ = "pokemon_habilidad"
     pokemon_id: int = Field(
@@ -159,6 +187,11 @@ class HabilidadesPokemon(SQLModel, table=True):
     habilidades: Habilidades = Relationship(back_populates="pokemon")
 
 
+class HabilidadesPokemonPublic(SQLModel):
+    habilidades: HabilidadesPublic
+    es_oculta: bool
+
+
 class GrupoHuevo(SQLModel, table=True):
     __tablename__ = "grupo_huevo"
     id: int = Field(sa_column=Column("egg_group_id", Integer, primary_key=True))
@@ -168,6 +201,10 @@ class GrupoHuevo(SQLModel, table=True):
 
 class GrupoHuevoCreate(SQLModel):
     pass
+
+
+class GrupoHuevoPublic(SQLModel):
+    nombre: str
 
 
 class GrupoHuevoPokemon(SQLModel, table=True):
@@ -184,11 +221,19 @@ class GrupoHuevoPokemon(SQLModel, table=True):
     grupo_huevo: GrupoHuevo = Relationship(back_populates="pokemon")
 
 
+class GrupoHuevoPokemonPublic(SQLModel):
+    grupo_huevo: GrupoHuevoPublic
+
+
 class Stats(SQLModel, table=True):
     __tablename__ = "stats"
     id: int = Field(sa_column=Column("stat_id", Integer, primary_key=True))
     nombre: str = Field(sa_column=Column("identifier", Text, nullable=False))
     pokemon: List["StatsDelPokemon"] = Relationship(back_populates="stats")
+
+
+class StatsPublic(SQLModel):
+    nombre: str
 
 
 class StatsCreate(SQLModel):
@@ -209,7 +254,8 @@ class StatsDelPokemon(SQLModel, table=True):
 
 
 class StatsDelPokemonPublic(SQLModel):
-    stats: Stats
+    stats: StatsPublic
+    base_stat: int
 
 
 class MovimientosBase(SQLModel):
@@ -271,7 +317,14 @@ class MovimientosPokemon(SQLModel, table=True):
             ForeignKey("metodo_aprender_movimiento.pokemon_move_method_id"),
         )
     )
+    metodo: "MetodoAprenderMovimiento" = Relationship()
     nivel: int = Field(sa_column=Column("level", Integer))
+
+
+class MovimientosPokemonPublic(SQLModel):
+    movimientos: MovimientosPublic
+    metodo: "MetodoAprenderMovimientoPublic"
+    nivel: int
 
 
 class MetodoAprenderMovimiento(SQLModel, table=True):
@@ -282,6 +335,10 @@ class MetodoAprenderMovimiento(SQLModel, table=True):
         )
     )
     nombre: str = Field(sa_column=Column("identifier", Text, nullable=False))
+
+
+class MetodoAprenderMovimientoPublic(SQLModel):
+    nombre: str
 
 
 class CategoriaMovimiento(SQLModel, table=True):
