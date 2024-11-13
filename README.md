@@ -6,7 +6,7 @@
 IntroDex es un proyecto desarrollado en Python.
 Este proyecto utiliza [FastAPI](https://fastapi.tiangolo.com/) como framework de API y [Alembic](https://alembic.sqlalchemy.org/) para la gestión de migraciones de base de datos.
 
-Consiste en implementar un sitio web para obtener información sobre Pokemones, sus movimientos y habilidades así como también la posibilidad de creación de equipos de combate (similar a https://pokemondb.net/).
+Consiste en implementar un sitio web para obtener información sobre Pokemones, sus movimientos y habilidades así como también la posibilidad de creación de equipos de combate (similar a [PokemonDB](https://pokemondb.net/)).
 
 ## Requisitos
 
@@ -36,7 +36,7 @@ Consiste en implementar un sitio web para obtener información sobre Pokemones, 
 ## Uso
 ### Ejecutar el Servidor
 
-> **❗IMPORTANT:** Se adjunta aquí un repositorio con los archivos .csv con la información necesaria para soportar la funcionalidad del trabajo: https://github.com/veekun/pokedex
+> **❗IMPORTANT:** Se adjunta aquí un repositorio con los archivos .csv con la información necesaria para soportar la funcionalidad del proyecto: [Veekun](https://github.com/veekun/pokedex)
 
 
 1. **Inicia el servidor de desarrollo** usando el comando de FastAPI `uvicorn`:
