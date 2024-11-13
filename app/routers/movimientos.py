@@ -14,17 +14,17 @@ def verificar_move_id(move_id: int, session: SessionDep) -> bool:
     if not movimiento:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Movimiento no encontrado.",
+            detail="Movimiento not found",
         )
     return True
 
 
 @router.get(
-    "/{id}/pokemon",
+    "/{move_id}/pokemon",
     responses={status.HTTP_404_NOT_FOUND: {"model": Error}},
     response_model=List[PokemonPublic],
 )
-def show_por_id(session: SessionDep, move_id: int) -> List[PokemonPublic]:
+def show_pokemones_por_id(session: SessionDep, move_id: int) -> List[PokemonPublic]:
     verificar_move_id(move_id, session)
     movimientos_pokemon = session.exec(
         select(MovimientosPokemon).where(MovimientosPokemon.move_id == move_id)
@@ -103,8 +103,22 @@ def show_movimiento_por_id(session: SessionDep, move_id: int) -> MovimientosPubl
             status_code=status.HTTP_404_NOT_FOUND, detail="Movimiento not found"
         )
 
-    if movimiento:
-        return movimiento
+    movimiento_public = MovimientosPublic(
+        id=movimiento.id,
+        nombre=movimiento.nombre,
+        class_tipo=movimiento.class_tipo,
+        class_categoria=movimiento.class_categoria
+        or CategoriaMovimiento(nombre="desconocido"),
+        potencia=movimiento.potencia,
+        precision=movimiento.precision,
+        usos=movimiento.usos,
+        generacion=movimiento.generacion,
+        class_efecto=movimiento.class_efecto
+        or EfectoMovimiento(descripcion="Sin efecto"),
+    )
+
+    if movimiento_public:
+        return movimiento_public
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND, detail="Movimiento not found"
     )
@@ -115,7 +129,7 @@ def show_movimiento_por_id(session: SessionDep, move_id: int) -> MovimientosPubl
     responses={status.HTTP_404_NOT_FOUND: {"model": Error}},
     response_model=MovimientosPublic,
 )
-def show_nombre_por_nombre(session: SessionDep, nombre: str) -> MovimientosPublic:
+def show_movimiento_por_nombre(session: SessionDep, nombre: str) -> MovimientosPublic:
     movimiento = session.exec(
         select(Movimientos).where(Movimientos.nombre == nombre)
     ).first()
@@ -125,8 +139,22 @@ def show_nombre_por_nombre(session: SessionDep, nombre: str) -> MovimientosPubli
             status_code=status.HTTP_404_NOT_FOUND, detail="Movimiento not found"
         )
 
-    if movimiento:
-        return movimiento
+    movimiento_public = MovimientosPublic(
+        id=movimiento.id,
+        nombre=movimiento.nombre,
+        class_tipo=movimiento.class_tipo,
+        class_categoria=movimiento.class_categoria
+        or CategoriaMovimiento(nombre="desconocido"),
+        potencia=movimiento.potencia,
+        precision=movimiento.precision,
+        usos=movimiento.usos,
+        generacion=movimiento.generacion,
+        class_efecto=movimiento.class_efecto
+        or EfectoMovimiento(descripcion="Sin efecto"),
+    )
+
+    if movimiento_public:
+        return movimiento_public
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND, detail="Movimiento not found"
     )

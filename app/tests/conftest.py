@@ -27,10 +27,21 @@ def db_session_fixture():
             nombre="Transformación",
             tipo=1,
             categoria=1,
-            potencia=0,
-            precision=0,
+            potencia=None,
+            precision=None,
             usos=10,
             generacion=1,
+            efecto=58,
+        )
+        movimiento_mofa = Movimientos(
+            id=269,
+            nombre="Mofa",
+            tipo=12,
+            categoria=3,
+            potencia=None,
+            precision=100,
+            usos=20,
+            generacion=3,
             efecto=58,
         )
 
@@ -56,6 +67,26 @@ def db_session_fixture():
             id_evolucion=None,
             imagen_evolucion="",
         )
+
+        session.add_all(
+            [
+                tipo_normal,
+                habilidad_flexibilidad,
+                habilidad_impostor,
+                movimiento_transformacion,
+                movimiento_mofa,
+                metodo_aprender_movimiento,
+                stat_vida,
+                stat_ataque,
+                stat_defensa,
+                stat_ataque_especial,
+                stat_defensa_especial,
+                stat_velocidad,
+                grupo_huevo_ditto,
+                pokemon_ditto,
+            ]
+        )
+        session.commit()
 
         session.add_all(
             [
@@ -94,25 +125,6 @@ def db_session_fixture():
                 StatsDelPokemon(pokemon_id=132, stat_id=4, base_stat=48),
                 StatsDelPokemon(pokemon_id=132, stat_id=5, base_stat=48),
                 StatsDelPokemon(pokemon_id=132, stat_id=6, base_stat=48),
-            ]
-        )
-        session.commit()
-
-        session.add_all(
-            [
-                tipo_normal,
-                habilidad_flexibilidad,
-                habilidad_impostor,
-                movimiento_transformacion,
-                metodo_aprender_movimiento,
-                stat_vida,
-                stat_ataque,
-                stat_defensa,
-                stat_ataque_especial,
-                stat_defensa_especial,
-                stat_velocidad,
-                grupo_huevo_ditto,
-                pokemon_ditto,
             ]
         )
         session.commit()

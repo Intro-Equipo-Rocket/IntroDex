@@ -231,8 +231,8 @@ class MovimientosBase(SQLModel):
             nullable=False,
         )
     )
-    potencia: int = Field(sa_column=Column("power", Integer, nullable=False))
-    precision: int = Field(sa_column=Column("accuracy", Integer, nullable=False))
+    potencia: int = Field(sa_column=Column("power", Integer))
+    precision: int = Field(sa_column=Column("accuracy", Integer))
     usos: int = Field(sa_column=Column("pp", Integer, nullable=False))
     generacion: int = Field(sa_column=Column("generation_id", Integer, nullable=False))
     efecto: int = Field(
