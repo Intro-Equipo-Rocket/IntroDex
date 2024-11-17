@@ -80,7 +80,7 @@ class PokemonPublic(SQLModel):
     habilidades: List["Habilidades"]
     grupo_huevo: List["GrupoHuevo"]
     stats: List["StatsDelPokemon"]
-    movimientos: List["Movimientos"]
+    movimientos: List["Movimientos"] | None = None
 
 
 class PokemonCreatePublic(SQLModel):
@@ -117,8 +117,10 @@ class TiposPublic(SQLModel):
 class TiposCreate(SQLModel):
     pass
 
+
 class TiposPublic(SQLModel):
     nombre: str
+
 
 class TiposPokemon(SQLModel, table=True):
     __tablename__ = "tipo_pokemon"
@@ -262,13 +264,28 @@ class StatsDelPokemonPublic(SQLModel):
 
 class MovimientosBase(SQLModel):
     nombre: str = Field(sa_column=Column("identifier", Text, nullable=False))
-    tipo: int = Field(sa_column=Column("type_id", Integer, ForeignKey("tipos.type_id"), nullable=False))
-    categoria: int = Field(sa_column=Column("damage_class_id", Integer, ForeignKey("categoria.move_damage_class_id"), nullable=False))
-    potencia: int = Field(sa_column=Column("power", Integer, nullable=False))
-    precision: int = Field(sa_column=Column("accuracy", Integer, nullable=False))
+    tipo: int = Field(
+        sa_column=Column(
+            "type_id", Integer, ForeignKey("tipos.type_id"), nullable=False
+        )
+    )
+    categoria: int = Field(
+        sa_column=Column(
+            "damage_class_id",
+            Integer,
+            ForeignKey("categoria.move_damage_class_id"),
+            nullable=False,
+        )
+    )
+    potencia: int = Field(sa_column=Column("power", Integer))
+    precision: int = Field(sa_column=Column("accuracy", Integer))
     usos: int = Field(sa_column=Column("pp", Integer, nullable=False))
     generacion: int = Field(sa_column=Column("generation_id", Integer, nullable=False))
-    efecto: int = Field(sa_column=Column("effect_id", Integer, ForeignKey("efecto.effect_id"), nullable=False))
+    efecto: int = Field(
+        sa_column=Column(
+            "effect_id", Integer, ForeignKey("efecto.effect_id"), nullable=False
+        )
+    )
 
 
 class Movimientos(MovimientosBase, table=True):
@@ -278,7 +295,12 @@ class Movimientos(MovimientosBase, table=True):
     class_categoria: "CategoriaMovimiento" = Relationship()
     class_efecto: "EfectoMovimiento" = Relationship()
     pokemon: List["MovimientosPokemon"] = Relationship(back_populates="movimientos")
-    integrante: List["IntegrantesEquipo"] = Relationship(back_populates="movimientos", sa_relationship_kwargs={"primaryjoin": "Movimientos.id == IntegrantesEquipo.move_id"})
+    integrante: List["IntegrantesEquipo"] = Relationship(
+        back_populates="movimientos",
+        sa_relationship_kwargs={
+            "primaryjoin": "Movimientos.id == IntegrantesEquipo.move_id"
+        },
+    )
 
 
 class MovimientosPublic(SQLModel):

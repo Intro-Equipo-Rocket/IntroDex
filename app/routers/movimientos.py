@@ -2,27 +2,90 @@ from fastapi import APIRouter, HTTPException, status
 from app.modelos import *
 from sqlmodel import select
 from app.database import SessionDep
+from typing import List
 
 router = APIRouter()
 
 
-@router.get("/{id}/pokemon", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
-def get_pokemon(id: int) -> Movimiento:
-    for move in Moves:
-        if move.id == id:
-            move.nombre = None
-            move.tipo = None
-            move.categoria = None
-            move.potencia = None
-            move.precision = None
-            move.usos = None
-            move.generacion = None
-            move.efecto = None
-            return move
+def verificar_move_id(move_id: int, session: SessionDep) -> bool:
+    movimiento = session.exec(
+        select(Movimientos).where(Movimientos.id == move_id)
+    ).first()
+    if not movimiento:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Movimiento not found",
+        )
+    return True
 
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="Movimiento no encontrado."
-    )
+
+@router.get(
+    "/{move_id}/pokemon",
+    responses={status.HTTP_404_NOT_FOUND: {"model": Error}},
+    response_model=List[PokemonPublic],
+)
+def show_pokemones_por_id(session: SessionDep, move_id: int) -> List[PokemonPublic]:
+    verificar_move_id(move_id, session)
+    movimientos_pokemon = session.exec(
+        select(MovimientosPokemon).where(MovimientosPokemon.move_id == move_id)
+    ).all()
+
+    pokemones = []
+
+    for movimiento_pokemon in movimientos_pokemon:
+        pokemon = session.exec(
+            select(Pokemon).where(Pokemon.id == movimiento_pokemon.pokemon_id)
+        ).first()
+
+        if pokemon:
+            tipos = session.exec(
+                select(Tipos)
+                .join(TiposPokemon)
+                .where(TiposPokemon.pokemon_id == pokemon.id)
+            ).all()
+
+            habilidades = session.exec(
+                select(Habilidades)
+                .join(HabilidadesPokemon)
+                .where(HabilidadesPokemon.pokemon_id == pokemon.id)
+            ).all()
+
+            grupo_huevo = session.exec(
+                select(GrupoHuevo)
+                .join(GrupoHuevoPokemon)
+                .where(GrupoHuevoPokemon.species_id == pokemon.especie)
+            ).all()
+
+            stats = session.exec(
+                select(StatsDelPokemon).where(StatsDelPokemon.pokemon_id == pokemon.id)
+            ).all()
+
+            movimientos = None  # movimientos == None porque solo nos interesa los datos del pokemon.
+
+            pokemon_public = PokemonPublic(
+                nombre=pokemon.nombre,
+                imagen=pokemon.imagen,
+                altura=pokemon.altura,
+                peso=pokemon.peso,
+                generacion=pokemon.generacion,
+                id_evolucion=pokemon.id_evolucion,
+                imagen_evolucion=pokemon.imagen_evolucion,
+                tipos=tipos,
+                habilidades=habilidades,
+                grupo_huevo=grupo_huevo,
+                stats=stats,
+                movimientos=movimientos,
+            )
+
+            pokemones.append(pokemon_public)
+
+    if not pokemones:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No Pokémon were found that learn that movement through pre-established methods",
+        )
+
+    return pokemones
 
 
 @router.get(
@@ -40,8 +103,22 @@ def show_movimiento_por_id(session: SessionDep, move_id: int) -> MovimientosPubl
             status_code=status.HTTP_404_NOT_FOUND, detail="Movimiento not found"
         )
 
-    if movimiento:
-        return movimiento
+    movimiento_public = MovimientosPublic(
+        id=movimiento.id,
+        nombre=movimiento.nombre,
+        class_tipo=movimiento.class_tipo,
+        class_categoria=movimiento.class_categoria
+        or CategoriaMovimiento(nombre="desconocido"),
+        potencia=movimiento.potencia,
+        precision=movimiento.precision,
+        usos=movimiento.usos,
+        generacion=movimiento.generacion,
+        class_efecto=movimiento.class_efecto
+        or EfectoMovimiento(descripcion="Sin efecto"),
+    )
+
+    if movimiento_public:
+        return movimiento_public
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND, detail="Movimiento not found"
     )
@@ -52,7 +129,7 @@ def show_movimiento_por_id(session: SessionDep, move_id: int) -> MovimientosPubl
     responses={status.HTTP_404_NOT_FOUND: {"model": Error}},
     response_model=MovimientosPublic,
 )
-def show_nombre_por_nombre(session: SessionDep, nombre: str) -> MovimientosPublic:
+def show_movimiento_por_nombre(session: SessionDep, nombre: str) -> MovimientosPublic:
     movimiento = session.exec(
         select(Movimientos).where(Movimientos.nombre == nombre)
     ).first()
@@ -62,8 +139,22 @@ def show_nombre_por_nombre(session: SessionDep, nombre: str) -> MovimientosPubli
             status_code=status.HTTP_404_NOT_FOUND, detail="Movimiento not found"
         )
 
-    if movimiento:
-        return movimiento
+    movimiento_public = MovimientosPublic(
+        id=movimiento.id,
+        nombre=movimiento.nombre,
+        class_tipo=movimiento.class_tipo,
+        class_categoria=movimiento.class_categoria
+        or CategoriaMovimiento(nombre="desconocido"),
+        potencia=movimiento.potencia,
+        precision=movimiento.precision,
+        usos=movimiento.usos,
+        generacion=movimiento.generacion,
+        class_efecto=movimiento.class_efecto
+        or EfectoMovimiento(descripcion="Sin efecto"),
+    )
+
+    if movimiento_public:
+        return movimiento_public
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND, detail="Movimiento not found"
     )
