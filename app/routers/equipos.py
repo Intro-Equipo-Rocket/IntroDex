@@ -155,10 +155,13 @@ def obtener_equipo_por_id(equipo_id: int) -> Equipo:
     )
     
 @router.delete("/{equipo_id}")
-def eliminar_equipo(equipo_id: int):
-    for i, equipo in enumerate(equipos):
-        if equipo.id == equipo_id:
-            equipo_eliminado = equipos.pop(i)
-            return {'mensaje': f"El equipo ({equipo_eliminado.nombre}) con id ({equipo_id}) ha sido eliminado."}
-        
-    raise HTTPException(status_code=404, detail=f'No se ha encontrado al equipo con id ({equipo_id}).')
+def eliminar_equipo(session: SessionDep, equipo_id: int):
+    equipo = session.get(Equipo, equipo_id)
+
+    if equipo is None:
+       raise HTTPException(status_code=404, detail=f'El equipo con id {equipo_id} no ha sido encontrado')
+    
+    session.delete(equipo)
+    session.commit()
+
+    return {"mensaje": f'El equipo con id {equipo_id} ha sido eliminado'}
