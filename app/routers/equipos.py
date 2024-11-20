@@ -134,16 +134,21 @@ def verificar_movimientos_pokemon(id_pokemon: int, id_movimientos: list[int]) ->
     return True
 
 @router.put("/{equipo_id}")
-def editar_equipo(equipo_id: int, equipo_nuevo: Equipo):
-    for equipo in equipos_db:
-        if equipo.id == equipo_id:
-            equipo.nombre = equipo_nuevo.nombre
-            equipo.pokemones = equipo_nuevo.pokemones
-            equipo.generacion = equipo_nuevo.generacion
+def editar_equipo(session: SessionDep, equipo_id: int, equipo_nuevo: Equipo):
+    equipo = session.get(Equipo, equipo_id)
 
-            return equipo
-            
-    raise HTTPException(status_code=404, detail="El equipo a cambiar no fue encontrado")
+    if equipo is None:
+        raise HTTPException(status_code=404, detail="El equipo a cambiar no existe")
+    
+    equipo.nombre = equipo_nuevo.nombre
+    equipo.generacion = equipo_nuevo.generacion
+    equipo.integrantes = equipo_nuevo.integrantes
+
+    session.add(equipo)
+    session.commit()
+    session.refresh(equipo)
+
+    return equipo
 
 @router.get("/id/{equipo_id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
 def obtener_equipo_por_id(equipo_id: int) -> Equipo:
