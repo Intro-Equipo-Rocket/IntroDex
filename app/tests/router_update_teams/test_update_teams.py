@@ -1,119 +1,45 @@
 from fastapi.testclient import TestClient
+from app.modelos import Equipo
 from app.main import app
+from app.database import get_session
+from sqlmodel import SQLModel, Session, create_engine
+import pytest
 
-client = TestClient(app)
+DATABASE_URL = "sqlite:///./test_1.db"
+engine = create_engine(DATABASE_URL, echo=True)
 
-def test_editar_equipo_exitoso():
-    nuevo_equipo = {
-        "id": 1,
-        "nombre": "equipo prueba",
-        "pokemones": [
-            {
-                "pokemon": {
-                    "imagen": "string",
-                    "id": 27,
-                    "nombre": "pruebamon",
-                    "tipos": [0],
-                    "altura": 0,
-                    "peso": 0,
-                    "habilidades": [0],
-                    "habilidad_oculta": 0,
-                    "grupo_huevo": [0],
-                    "vida": 0,
-                    "ataque": 0,
-                    "defensa": 0,
-                    "ataque_especial": 0,
-                    "defensa_especial": 0,
-                    "velocidad": 0,
-                    "total": 0,
-                    "evoluciones": [0],
-                    "imagenes_evoluciones": ["string"],
-                    "movimientos_aprendibles_nivel": [0],
-                    "movimientos_aprendibles_evolucion": [0],
-                    "movimientos_aprendibles_tms": [0],
-                    "movimientos_aprendibles_huevo": [0],
-                    "debilidades_tipo": [0],
-                    "generacion": 0
-                },
-                "movimientos": [0],
-                "naturaleza": {
-                    "id": 0,
-                    "nombre": "string",
-                    "stat_perjudicada_id": 0,
-                    "stat_mejorada_id": 0
-                },
-                "evs": {
-                    "vida": 0,
-                    "ataque": 0,
-                    "defensa": 0,
-                    "ataque_especial": 0,
-                    "defensa_especial": 0,
-                    "velocidad": 0
-                }
-            }
-        ],
-        "generacion": 0
-    }
+@pytest.fixture(scope="module")
+def setup_db():
+    SQLModel.metadata.create_all(engine)
+    with Session(engine) as session:
+        session.add_all([
+            Equipo(id=1, nombre="Equipo Rocket", generacion=1),
+            Equipo(id=2, nombre="Equipo Aqua", generacion=3),
+        ])
+        session.commit()
+    yield
+    SQLModel.metadata.drop_all(engine)
 
-    response = client.put("/equipos/1", json=nuevo_equipo)
-    
+@pytest.fixture
+def client():
+    def override_get_session():
+        with Session(engine) as session:
+            yield session
+
+    app.dependency_overrides[get_session] = override_get_session
+    yield TestClient(app)
+    app.dependency_overrides.clear()
+
+def test_editar_equipo_exitoso(client, setup_db):
+    equipo_nuevo = Equipo(id=1, nombre="Equipo Plasma", generacion=4)
+    response = client.put(f'/equipos/{equipo_nuevo.id}', json=equipo_nuevo.model_dump())
+
     assert response.status_code == 200
-    assert response.json()["nombre"] == "equipo prueba"
-    assert response.json()["pokemones"][0]["pokemon"]["nombre"] == "pruebamon"
+    assert response.json()["nombre"] == "Equipo Plasma"
 
-def test_editar_equipo_no_encontrado():
-    nuevo_equipo = {
-        "id": 2,
-        "nombre": "equipo prueba",
-        "pokemones": [
-            {
-                "pokemon": {
-                    "imagen": "string",
-                    "id": 27,
-                    "nombre": "pruebamon",
-                    "tipos": [0],
-                    "altura": 0,
-                    "peso": 0,
-                    "habilidades": [0],
-                    "habilidad_oculta": 0,
-                    "grupo_huevo": [0],
-                    "vida": 0,
-                    "ataque": 0,
-                    "defensa": 0,
-                    "ataque_especial": 0,
-                    "defensa_especial": 0,
-                    "velocidad": 0,
-                    "total": 0,
-                    "evoluciones": [0],
-                    "imagenes_evoluciones": ["string"],
-                    "movimientos_aprendibles_nivel": [0],
-                    "movimientos_aprendibles_evolucion": [0],
-                    "movimientos_aprendibles_tms": [0],
-                    "movimientos_aprendibles_huevo": [0],
-                    "debilidades_tipo": [0],
-                    "generacion": 0
-                },
-                "movimientos": [0],
-                "naturaleza": {
-                    "id": 0,
-                    "nombre": "string",
-                    "stat_perjudicada_id": 0,
-                    "stat_mejorada_id": 0
-                },
-                "evs": {
-                    "vida": 0,
-                    "ataque": 0,
-                    "defensa": 0,
-                    "ataque_especial": 0,
-                    "defensa_especial": 0,
-                    "velocidad": 0
-                }
-            }
-        ],
-        "generacion": 0
-    }
+def test_editar_equipo_no_encontrado(client, setup_db):
+    equipo_nuevo = Equipo(id=7, nombre="Equipo Plasma", generacion=4)
+    response = client.put(f'/equipos/{equipo_nuevo.id}', json=equipo_nuevo.model_dump())
 
-    response = client.put("/equipos/2", json=nuevo_equipo)
-    
     assert response.status_code == 404
-    assert response.json()["detail"] == "El equipo a cambiar no fue encontrado"
+    assert response.json() == {"detail": "El equipo a cambiar no existe"}
