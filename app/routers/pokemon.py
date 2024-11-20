@@ -40,11 +40,20 @@ def get_pokemons(session: SessionDep) -> list[PokemonPublic]:
             select(StatsDelPokemon).where(StatsDelPokemon.pokemon_id == pokemon.id)
         ).all()
 
-        movimientos = session.exec(
-            select(Movimientos)
-            .join(MovimientosPokemon)
-            .where(MovimientosPokemon.pokemon_id == pokemon.id)
+        # movimientos = session.exec(
+        #     select(Movimientos)
+        #     .join(MovimientosPokemon)
+        #     .where(MovimientosPokemon.pokemon_id == pokemon.id)
+        # ).all()
+
+        evoluciones = session.exec(
+            select(PokemonEvoluciones).where(PokemonEvoluciones.pokemon_id == pokemon.id)
         ).all()
+
+        for evolucion in evoluciones:
+            evolucion.pokemon = session.exec(
+                select(Pokemon).where(Pokemon.id == evolucion.evolution_id)
+            ).first()
 
         pokemon_public = PokemonPublic(
             nombre=pokemon.nombre,
@@ -52,27 +61,28 @@ def get_pokemons(session: SessionDep) -> list[PokemonPublic]:
             altura=pokemon.altura,
             peso=pokemon.peso,
             generacion=pokemon.generacion,
-            id_evolucion=pokemon.id_evolucion,
-            imagen_evolucion=pokemon.imagen_evolucion,
+            # id_evolucion=pokemon.id_evolucion,
+            # imagen_evolucion=pokemon.imagen_evolucion,
             tipos=tipos,
             habilidades=habilidades,
             grupo_huevo=grupo_huevo,
             stats=stats,
-            movimientos=movimientos,
+            # movimientos=movimientos,
+            evoluciones=evoluciones,
         )
         pokemons_public.append(pokemon_public)
 
     return pokemons_public
 
 
-@router.get("/nombre/{nombre}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
-def get_pokemon(nombre: str) -> Pokemon:
-    for pokemon in pokemones:
-        if pokemon.nombre.lower() == nombre.lower():
-            return pokemon
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="Pokemon no encontrado."
-    )
+# @router.get("/nombre/{nombre}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
+# def get_pokemon(nombre: str) -> Pokemon:
+#     for pokemon in pokemones:
+#         if pokemon.nombre.lower() == nombre.lower():
+#             return pokemon
+#     raise HTTPException(
+#         status_code=status.HTTP_404_NOT_FOUND, detail="Pokemon no encontrado."
+#     )
 
 
 
@@ -121,18 +131,28 @@ def show_pokemon_por_id(session: SessionDep, pokemon_id: int) -> PokemonPublic:
         .where(MovimientosPokemon.pokemon_id == pokemon.id)
     ).all()
 
+    evoluciones = session.exec(
+            select(PokemonEvoluciones).where(PokemonEvoluciones.pokemon_id == pokemon.id)
+        ).all()
+
+    for evolucion in evoluciones:
+        evolucion.pokemon = session.exec(
+            select(Pokemon).where(Pokemon.id == evolucion.evolution_id)
+        ).first()
+
     pokemon_public = PokemonPublic(
         nombre=pokemon.nombre,
         imagen=pokemon.imagen,
         altura=pokemon.altura,
         peso=pokemon.peso,
         generacion=pokemon.generacion,
-        id_evolucion=pokemon.id_evolucion,
-        imagen_evolucion=pokemon.imagen_evolucion,
+        # id_evolucion=pokemon.id_evolucion,
+        # imagen_evolucion=pokemon.imagen_evolucion,
         tipos=tipos,
         habilidades=habilidades,
         grupo_huevo=grupo_huevo,
         stats=stats,
+        evoluciones=evoluciones,
         movimientos=movimientos,
     )
 
@@ -190,19 +210,29 @@ def show_pokemon_por_name(session: SessionDep, nombre: str) -> PokemonPublic:
         .where(MovimientosPokemon.pokemon_id == pokemon.id)
     ).all()
 
+    evoluciones = session.exec(
+            select(PokemonEvoluciones).where(PokemonEvoluciones.pokemon_id == pokemon.id)
+    ).all()
+
+    for evolucion in evoluciones:
+        evolucion.pokemon = session.exec(
+            select(Pokemon).where(Pokemon.id == evolucion.evolution_id)
+        ).first()    
+
     pokemon_public = PokemonPublic(
         nombre=pokemon.nombre,
         imagen=pokemon.imagen,
         altura=pokemon.altura,
         peso=pokemon.peso,
         generacion=pokemon.generacion,
-        id_evolucion=pokemon.id_evolucion,
-        imagen_evolucion=pokemon.imagen_evolucion,
+        # id_evolucion=pokemon.id_evolucion,
+        # imagen_evolucion=pokemon.imagen_evolucion,
         tipos=tipos,
         habilidades=habilidades,
         grupo_huevo=grupo_huevo,
         stats=stats,
         movimientos=movimientos,
+        evoluciones=evoluciones,
     )
 
     if pokemon_public:
