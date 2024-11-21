@@ -9,13 +9,14 @@ from app.database import SessionDep
 
 router = APIRouter()
 
-@router.get("/pagina/{pagina}", response_model=List[Equipo])
-def obtener_equipos(pagina: int, cantidad_equipos: int = 10):
+@router.get("/pagina/{pagina}")
+def obtener_equipos(session: SessionDep, pagina: int, cantidad_equipos: int = 10) -> list[Equipo]:
     if pagina < 1 or cantidad_equipos < 1:
         raise HTTPException(status_code=404, detail="Algunos de los parámetros están siendo mal introducidas")
     
-    skip = (pagina - 1) * 10
-    equipos_pagina = equipos_db[skip:skip + cantidad_equipos]
+    skip = (pagina - 1) * cantidad_equipos
+    query = select(Equipo).offset(skip).limit(cantidad_equipos)
+    equipos_pagina = session.exec(query).all()
 
     if not equipos_pagina:
         raise HTTPException(status_code=404, detail="No se encontraron equipos para esta página")
