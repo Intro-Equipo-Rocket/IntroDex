@@ -539,6 +539,11 @@ def get_pokemon(id: int, session: SessionDep) -> Pokemon:
     ).all()
     for especie in pkm_especie:
         session.delete(especie)
+    pkm_evolucion = session.exec(
+        select(PokemonEvoluciones).where(PokemonEvoluciones.pokemon_id == pokemon.id)
+    ).all()
+    for evolucion in pkm_evolucion:
+        session.delete(evolucion)
     session.delete(pokemon)
     session.commit()
     return pokemon
