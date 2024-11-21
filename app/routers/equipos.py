@@ -140,9 +140,40 @@ def editar_equipo(session: SessionDep, equipo_id: int, equipo_nuevo: Equipo):
     if equipo is None:
         raise HTTPException(status_code=404, detail="El equipo a cambiar no existe")
     
+    if equipo_nuevo.nombre is None:
+        raise HTTPException(status_code=400, detail='Debes ingresar el nuevo nombre del equipo o ingresa el nombre que tenía por defecto')
+    
+    if equipo_nuevo.generacion not in range(1, 9):
+        raise HTTPException(status_code=400, detail='La generacion que ingresaste no es válida')
+    
+    if len(equipo_nuevo.integrantes) > 5:
+        raise HTTPException(status_code=400, detail='Te sobrepasaste con a cantidad de integrantes')
+         
     equipo.nombre = equipo_nuevo.nombre
     equipo.generacion = equipo_nuevo.generacion
-    equipo.integrantes = equipo_nuevo.integrantes
+    
+    equipo.integrantes.clear()
+    for integrante in equipo_nuevo.integrantes:
+        integrante_existente = session.get(IntegrantesEquipo, integrante.id)
+        if integrante_existente:
+            if integrante_existente.equipo_id != equipo_id:
+                raise HTTPException(status_code=400, detail=f'El integrante con id {integrante.id} pertenece a otro equipo')
+            
+            equipo.integrantes.append(integrante_existente)
+        else:
+            if not integrante.pokemon_id or not integrante.equipo_id:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Los datos del integrante con id {integrante.id} son inválidos"
+                )
+            nuevo_integrante = IntegrantesEquipo(
+                pokemon_id = integrante.pokemon_id,
+                equipo_id = equipo_id,
+                move_id = integrante.move_id,
+                naturaleza_id = integrante.naturaleza_id
+            )
+            session.add(nuevo_integrante)
+            equipo.integrantes.append(nuevo_integrante)
 
     session.add(equipo)
     session.commit()
