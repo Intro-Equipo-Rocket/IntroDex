@@ -16,7 +16,6 @@ def obtener_equipos(session: SessionDep, pagina: int, cantidad_equipos: int = 10
     skip = (pagina - 1) * cantidad_equipos
     query = select(Equipo).offset(skip).limit(cantidad_equipos)
     equipos_pagina = session.exec(query).all()
-
     if not equipos_pagina:
         raise HTTPException(
             status_code=404, detail="No se encontraron equipos para esta página"
@@ -458,13 +457,39 @@ def editar_equipo(equipo_id: int, equipo_nuevo: Equipo):
 
 
 @router.get("/id/{equipo_id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
-def obtener_equipo_por_id(equipo_id: int) -> Equipo:
-    for equipo in equipos_db:
-        if equipo.id == equipo_id:
-            return equipo
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="Id de equipo inexistente"
+def obtener_equipo_por_id(session: SessionDep, equipo_id: int):
+    equipo = buscar_equipo(session, equipo_id)
+    integrantes_publicos: List[IntegrantesEquipoPublic] = []
+    ids_integrantes = []
+    for integrante in equipo.integrantes:
+        if integrante.id not in ids_integrantes:
+            query_moves_integrante = (
+                select(Movimientos)
+                .join(IntegrantesEquipo)
+                .where(
+                    IntegrantesEquipo.id == integrante.id,
+                    IntegrantesEquipo.move_id == Movimientos.id,
+                )
+            )
+            moves_integrantes = session.exec(query_moves_integrante).all()
+            integrantes_publicos.append(
+                IntegrantesEquipoPublic(
+                    pokemon=integrante.pokemon,
+                    movimientos=moves_integrantes,
+                    naturaleza=integrante.naturaleza,
+                    evs=integrante.estadisticas,
+                )
+            )
+            ids_integrantes.append(integrante.id)
+
+    equipo_publico = EquipoPublic(
+        id=equipo.id,
+        nombre=equipo.nombre,
+        generacion=equipo.generacion,
+        integrantes=integrantes_publicos,
     )
+
+    return equipo_publico
 
 
 @router.delete("/delete/{equipo_id}")
@@ -477,7 +502,7 @@ def eliminar_equipo(equipo_id: int, session: SessionDep):
     equipo = session.exec(query_equipo).first()
     if not equipo:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Equipo no encontrado."
+            status_code=status.HTTP_404_NOT_FOUND, detail="Team not found"
         )
     for integrante in integrantes:
         query_evs = select(Estadisticas).where(Estadisticas.member_id == integrante.id)
@@ -489,3 +514,12 @@ def eliminar_equipo(equipo_id: int, session: SessionDep):
     session.delete(equipo)
     session.commit()
     return {"detail": f"Equipo {equipo_id} eliminado"}
+
+
+
+def buscar_equipo(session: SessionDep, equipo_id: int) -> Equipo:
+    query = select(Equipo).where(Equipo.id == equipo_id)
+    equipo = session.exec(query).first()
+    if equipo:
+        return equipo
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Team not found")
