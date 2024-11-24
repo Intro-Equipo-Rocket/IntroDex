@@ -159,9 +159,13 @@ def eliminar_equipo(session: SessionDep, equipo_id: int):
     equipo = session.get(Equipo, equipo_id)
 
     if equipo is None:
-       raise HTTPException(status_code=404, detail=f'El equipo con id {equipo_id} no ha sido encontrado')
-    
+        raise HTTPException(status_code=404, detail=f'El equipo con id {equipo_id} no ha sido encontrado')
+
+    integrantes = session.exec(select(IntegrantesEquipo).where(IntegrantesEquipo.equipo_id == equipo_id)).all()
+    for integrante in integrantes:
+        session.delete(integrante)
+
     session.delete(equipo)
     session.commit()
 
-    return {"mensaje": f'El equipo con id {equipo_id} ha sido eliminado'}
+    return {"mensaje": f'El equipo con id {equipo_id} y sus integrantes han sido eliminados'}
