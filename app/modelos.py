@@ -318,25 +318,13 @@ class MovimientosPublic(SQLModel):
     class_categoria: "CategoriaMovimientoPublic"
     potencia: Optional[int]
     precision: Optional[int]
-    usos: int
+    usos: Optional[int]
     generacion: int
     class_efecto: "EfectoMovimientoPublic"
 
 
 class MovimientosCreate(MovimientosBase):
     pass
-
-
-class MovimientosPublic(SQLModel):
-    id: int
-    nombre: str
-    tipo: int
-    categoria: int
-    potencia: Optional[int]
-    precision: Optional[int]
-    usos: int
-    generacion: int
-    efecto: int
 
 
 class MovimientosPokemon(SQLModel, table=True):

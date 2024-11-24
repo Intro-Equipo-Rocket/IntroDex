@@ -6,6 +6,16 @@ from typing import List
 
 router = APIRouter()
 
+@router.get("/", response_model=List[MovimientosPublic])
+def obtener_movimientos(session: SessionDep):
+    query = select(Movimientos)
+    movimientos = session.exec(query).all()
+    if not movimientos:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Movimientos not found",
+        )
+    return movimientos
 
 def verificar_move_id(move_id: int, session: SessionDep) -> bool:
     movimiento = session.exec(
