@@ -47,7 +47,9 @@ def get_pokemons(session: SessionDep) -> list[PokemonPublic]:
         # ).all()
 
         evoluciones = session.exec(
-            select(PokemonEvoluciones).where(PokemonEvoluciones.pokemon_id == pokemon.id)
+            select(PokemonEvoluciones).where(
+                PokemonEvoluciones.pokemon_id == pokemon.id
+            )
         ).all()
 
         for evolucion in evoluciones:
@@ -121,8 +123,8 @@ def show_pokemon_por_id(session: SessionDep, pokemon_id: int) -> PokemonPublic:
     ).all()
 
     evoluciones = session.exec(
-            select(PokemonEvoluciones).where(PokemonEvoluciones.pokemon_id == pokemon.id)
-        ).all()
+        select(PokemonEvoluciones).where(PokemonEvoluciones.pokemon_id == pokemon.id)
+    ).all()
 
     for evolucion in evoluciones:
         evolucion.pokemon = session.exec(
@@ -200,13 +202,13 @@ def show_pokemon_por_name(session: SessionDep, nombre: str) -> PokemonPublic:
     ).all()
 
     evoluciones = session.exec(
-            select(PokemonEvoluciones).where(PokemonEvoluciones.pokemon_id == pokemon.id)
+        select(PokemonEvoluciones).where(PokemonEvoluciones.pokemon_id == pokemon.id)
     ).all()
 
     for evolucion in evoluciones:
         evolucion.pokemon = session.exec(
             select(Pokemon).where(Pokemon.id == evolucion.evolution_id)
-        ).first()    
+        ).first()
 
     pokemon_public = PokemonPublic(
         nombre=pokemon.nombre,
@@ -537,19 +539,14 @@ def get_pokemon(id: int, session: SessionDep) -> Pokemon:
     ).all()
     for especie in pkm_especie:
         session.delete(especie)
+    pkm_evolucion = session.exec(
+        select(PokemonEvoluciones).where(PokemonEvoluciones.pokemon_id == pokemon.id)
+    ).all()
+    for evolucion in pkm_evolucion:
+        session.delete(evolucion)
     session.delete(pokemon)
     session.commit()
     return pokemon
-
-
-def buscar_pokemon(id: int) -> Pokemon:
-    for pokemon in pokemones:
-        if pokemon.id == id:
-            return pokemon
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="Pokemon no encontrado o ya eliminado.",
-    )
 
 
 @router.get("/{pokemon_id}/movimientos", response_model=list[MovimientosPokemonPublic])

@@ -516,6 +516,7 @@ def eliminar_equipo(equipo_id: int, session: SessionDep):
     return {"detail": f"Equipo {equipo_id} eliminado"}
 
 
+
 def buscar_equipo(session: SessionDep, equipo_id: int) -> Equipo:
     query = select(Equipo).where(Equipo.id == equipo_id)
     equipo = session.exec(query).first()
