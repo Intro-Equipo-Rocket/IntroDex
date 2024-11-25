@@ -134,46 +134,51 @@ def verificar_movimientos_pokemon(id_pokemon: int, id_movimientos: list[int]) ->
     return True
 
 @router.put("/{equipo_id}")
-def editar_equipo(session: SessionDep, equipo_id: int, equipo_nuevo: Equipo):
+def editar_equipo(session: SessionDep, equipo_id: int, equipo_nuevo: EquipoUpdate):
     equipo = session.get(Equipo, equipo_id)
-
-    if equipo is None:
+    if not equipo:
         raise HTTPException(status_code=404, detail="El equipo a cambiar no existe")
-    
-    if equipo_nuevo.nombre is None:
-        raise HTTPException(status_code=400, detail='Debes ingresar el nuevo nombre del equipo o ingresa el nombre que tenía por defecto')
-    
+
+    if not equipo_nuevo.nombre:
+        raise HTTPException(status_code=400, detail="Debes ingresar un nuevo nombre para el equipo.")
     if equipo_nuevo.generacion not in range(1, 9):
-        raise HTTPException(status_code=400, detail='La generacion que ingresaste no es válida')
-    
-    if len(equipo_nuevo.integrantes) > 5:
-        raise HTTPException(status_code=400, detail='Te sobrepasaste con a cantidad de integrantes')
-         
+        raise HTTPException(status_code=400, detail="La generación ingresada no es válida.")
+    if len(equipo_nuevo.integrantes or []) > 5:
+        raise HTTPException(status_code=400, detail="No puedes tener más de 5 integrantes.")
+
     equipo.nombre = equipo_nuevo.nombre
     equipo.generacion = equipo_nuevo.generacion
-    
-    equipo.integrantes.clear()
-    for integrante in equipo_nuevo.integrantes:
-        integrante_existente = session.get(IntegrantesEquipo, integrante.id)
-        if integrante_existente:
-            if integrante_existente.equipo_id != equipo_id:
-                raise HTTPException(status_code=400, detail=f'El integrante con id {integrante.id} pertenece a otro equipo')
-            
-            equipo.integrantes.append(integrante_existente)
+
+    if equipo_nuevo.integrantes:
+        equipo.integrantes.clear()
+        for integrante_nuevo in equipo_nuevo.integrantes:
+            movimientos_validos = (
+             session.query(Movimientos.id).join(MovimientosPokemon, Movimientos.id == MovimientosPokemon.move_id).filter(MovimientosPokemon.pokemon_id == integrante_nuevo.pokemon_id).all())
+
+        movimientos_validos_ids = {mv[0] for mv in movimientos_validos} 
+
+        for movimiento_id in integrante_nuevo.movimientos or []:
+            if movimiento_id not in movimientos_validos_ids:
+                raise HTTPException(status_code=400, detail=f"El movimiento con id {movimiento_id} no es compatible con el Pokémon {integrante_nuevo.pokemon_id}")
+
+        if integrante_nuevo.integrante_id:
+            integrante = session.get(IntegrantesEquipo, integrante_nuevo.integrante_id)
+            if not integrante:
+                raise HTTPException(status_code=404, detail="El integrante no existe.")
         else:
-            if not integrante.pokemon_id or not integrante.equipo_id:
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Los datos del integrante con id {integrante.id} son inválidos"
-                )
-            nuevo_integrante = IntegrantesEquipo(
-                pokemon_id = integrante.pokemon_id,
-                equipo_id = equipo_id,
-                move_id = integrante.move_id,
-                naturaleza_id = integrante.naturaleza_id
+            integrante = IntegrantesEquipo(pokemon_id=integrante_nuevo.pokemon_id, equipo_id=equipo_id, naturaleza_id=integrante_nuevo.naturaleza_id,)
+            session.add(integrante)
+
+        session.query(MovimientosPokemon).filter(MovimientosPokemon.pokemon_id == integrante.pokemon_id).delete()
+
+        for movimiento_id in integrante_nuevo.movimientos or []:
+            movimiento_relacion = MovimientosPokemon(
+                pokemon_id=integrante.pokemon_id,
+                move_id=movimiento_id,
+                id_metodo=1,  
+                nivel=0 
             )
-            session.add(nuevo_integrante)
-            equipo.integrantes.append(nuevo_integrante)
+            session.add(movimiento_relacion)
 
     session.add(equipo)
     session.commit()
@@ -181,6 +186,10 @@ def editar_equipo(session: SessionDep, equipo_id: int, equipo_nuevo: Equipo):
 
     return equipo
 
+def get_movimientos_validos(session: SessionDep, pokemon_id: int) -> set:
+    movimientos = session.exec(Movimientos.id).join(MovimientosPokemon).filter(MovimientosPokemon.pokemon_id == pokemon_id).all()
+    return {movimiento.id for movimiento in movimientos}
+    
 @router.get("/id/{equipo_id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
 def obtener_equipo_por_id(equipo_id: int) -> Equipo:
     for equipo in equipos_db:
