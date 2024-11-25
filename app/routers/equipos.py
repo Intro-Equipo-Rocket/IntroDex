@@ -443,15 +443,15 @@ def verificar_movimientos_pokemon(
             )
 
 
-@router.put("/{equipo_id}")
-def editar_equipo(equipo_id: int, equipo_nuevo: Equipo):
-    for equipo in equipos_db:
-        if equipo.id == equipo_id:
-            equipo.nombre = equipo_nuevo.nombre
-            equipo.pokemones = equipo_nuevo.pokemones
-            equipo.generacion = equipo_nuevo.generacion
+# @router.put("/{equipo_id}")
+# def editar_equipo(equipo_id: int, equipo_nuevo: Equipo):
+#     for equipo in equipos_db:
+#         if equipo.id == equipo_id:
+#             equipo.nombre = equipo_nuevo.nombre
+#             equipo.pokemones = equipo_nuevo.pokemones
+#             equipo.generacion = equipo_nuevo.generacion
 
-            return equipo
+#             return equipo
 
     raise HTTPException(status_code=404, detail="El equipo a cambiar no fue encontrado")
 
@@ -491,31 +491,22 @@ def obtener_equipo_por_id(session: SessionDep, equipo_id: int):
 
     return equipo_publico
 
-
-@router.delete("/delete/{equipo_id}")
-def eliminar_equipo(equipo_id: int, session: SessionDep):
-    query_integrantes = select(IntegrantesEquipo).where(
-        IntegrantesEquipo.equipo_id == equipo_id
-    )
-    integrantes = session.exec(query_integrantes).all()
-    query_equipo = select(Equipo).where(Equipo.id == equipo_id)
-    equipo = session.exec(query_equipo).first()
+@router.delete("/eliminar/{equipo_id}")
+def eliminar_equipo(session: SessionDep, equipo_id: int):
+    equipo = session.get(Equipo, equipo_id)
     if not equipo:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Team not found"
-        )
+        raise HTTPException(status_code=404, detail=f'El equipo con id {equipo_id} no ha sido encontrado')
+
+    integrantes = session.exec(select(IntegrantesEquipo).where(IntegrantesEquipo.equipo_id == equipo_id)).all()
     for integrante in integrantes:
-        query_evs = select(Estadisticas).where(Estadisticas.member_id == integrante.id)
-        evs = session.exec(query_evs).first()
+        evs = session.exec(select(Estadisticas).where(Estadisticas.member_id == integrante.id)).first()
         session.delete(evs)
-        session.commit()
         session.delete(integrante)
-        session.commit()
+
     session.delete(equipo)
     session.commit()
-    return {"detail": f"Equipo {equipo_id} eliminado"}
 
-
+    return {'detail': f'El equipo con id {equipo_id} y sus integrantes han sido eliminados'}
 
 def buscar_equipo(session: SessionDep, equipo_id: int) -> Equipo:
     query = select(Equipo).where(Equipo.id == equipo_id)
