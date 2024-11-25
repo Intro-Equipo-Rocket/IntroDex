@@ -6,8 +6,8 @@ from sqlalchemy import Engine
 from sqlmodel import Session, select
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 
-from app.routers import pokemon, movimientos, equipos, naturalezas
-from app.database import engine
+from .routers import pokemon, movimientos, equipos, naturalezas
+from .database import engine
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
