@@ -491,7 +491,7 @@ def obtener_equipo_por_id(session: SessionDep, equipo_id: int):
 
     return equipo_publico
 
-@router.delete("/{equipo_id}")
+@router.delete("/eliminar/{equipo_id}")
 def eliminar_equipo(session: SessionDep, equipo_id: int):
     equipo = session.get(Equipo, equipo_id)
     if not equipo:
