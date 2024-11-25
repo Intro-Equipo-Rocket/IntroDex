@@ -508,31 +508,6 @@ def eliminar_equipo(session: SessionDep, equipo_id: int):
 
     return {'detail': f'El equipo con id {equipo_id} y sus integrantes han sido eliminados'}
 
-# @router.delete("/delete/{equipo_id}")
-# def eliminar_equipo(equipo_id: int, session: SessionDep):
-#     query_integrantes = select(IntegrantesEquipo).where(
-#         IntegrantesEquipo.equipo_id == equipo_id
-#     )
-#     integrantes = session.exec(query_integrantes).all()
-#     query_equipo = select(Equipo).where(Equipo.id == equipo_id)
-#     equipo = session.exec(query_equipo).first()
-#     if not equipo:
-#         raise HTTPException(
-#             status_code=status.HTTP_404_NOT_FOUND, detail="Team not found"
-#         )
-#     for integrante in integrantes:
-#         query_evs = select(Estadisticas).where(Estadisticas.member_id == integrante.id)
-#         evs = session.exec(query_evs).first()
-#         session.delete(evs)
-#         session.commit()
-#         session.delete(integrante)
-#         session.commit()
-#     session.delete(equipo)
-#     session.commit()
-#     return {"detail": f"Equipo {equipo_id} eliminado"}
-
-
-
 def buscar_equipo(session: SessionDep, equipo_id: int) -> Equipo:
     query = select(Equipo).where(Equipo.id == equipo_id)
     equipo = session.exec(query).first()
