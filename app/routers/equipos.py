@@ -8,7 +8,7 @@ from app.database import SessionDep
 router = APIRouter()
 
 
-@router.get("/pagina/{pagina}")
+@router.get("/pagina/{pagina}", response_model=List[EquipoPublic])
 def obtener_equipos(session: SessionDep, pagina: int, cantidad_equipos: int = 10) -> list[Equipo]:
     if pagina < 1 or cantidad_equipos < 1:
         raise HTTPException(status_code=404, detail="Algunos de los parámetros están siendo mal introducidas")
@@ -20,8 +20,42 @@ def obtener_equipos(session: SessionDep, pagina: int, cantidad_equipos: int = 10
         raise HTTPException(
             status_code=404, detail="No se encontraron equipos para esta página"
         )
+    
+    equipos_public = []
+    for equipo in equipos_pagina:
+        integrantes_publicos: List[IntegrantesEquipoPublic] = []
+        ids_integrantes = []
+        for integrante in equipo.integrantes:
+            if integrante.id not in ids_integrantes:
+                query_moves_integrante = (
+                    select(Movimientos)
+                    .join(IntegrantesEquipo)
+                    .where(
+                        IntegrantesEquipo.id == integrante.id,
+                        IntegrantesEquipo.move_id == Movimientos.id,
+                    )
+                )
+                moves_integrantes = session.exec(query_moves_integrante).all()
+                integrantes_publicos.append(
+                    IntegrantesEquipoPublic(
+                        pokemon=integrante.pokemon,
+                        movimientos=moves_integrantes,
+                        naturaleza=integrante.naturaleza,
+                        evs=integrante.estadisticas,
+                    )
+                )
+                ids_integrantes.append(integrante.id)
 
-    return equipos_pagina
+        equipo_publico = EquipoPublic(
+            id=equipo.id,
+            nombre=equipo.nombre,
+            generacion=equipo.generacion,
+            integrantes=integrantes_publicos,
+        )
+
+        equipos_public.append(equipo_publico)
+
+    return equipos_public
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=EquipoPublic)
