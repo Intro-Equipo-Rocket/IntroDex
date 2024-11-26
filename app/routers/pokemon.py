@@ -117,8 +117,7 @@ def show_pokemon_por_id(session: SessionDep, pokemon_id: int) -> PokemonPublic:
     ).all()
 
     movimientos = session.exec(
-        select(Movimientos)
-        .join(MovimientosPokemon)
+        select(MovimientosPokemon)
         .where(MovimientosPokemon.pokemon_id == pokemon.id)
     ).all()
 
@@ -196,8 +195,7 @@ def show_pokemon_por_name(session: SessionDep, nombre: str) -> PokemonPublic:
     ).all()
 
     movimientos = session.exec(
-        select(Movimientos)
-        .join(MovimientosPokemon)
+        select(MovimientosPokemon)
         .where(MovimientosPokemon.pokemon_id == pokemon.id)
     ).all()
 

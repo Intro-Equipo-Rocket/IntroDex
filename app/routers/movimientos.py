@@ -70,7 +70,10 @@ def show_pokemones_por_id(session: SessionDep, move_id: int) -> List[PokemonPubl
                 select(StatsDelPokemon).where(StatsDelPokemon.pokemon_id == pokemon.id)
             ).all()
 
-            movimientos = None  # movimientos == None porque solo nos interesa los datos del pokemon.
+            movimiento: List[MovimientosPokemon] = []
+            for movimiento_pokemon in movimientos_pokemon:
+                if movimiento_pokemon.pokemon_id == pokemon.id:
+                    movimiento.append(movimiento_pokemon)
 
             evoluciones = session.exec(
                 select(PokemonEvoluciones).where(PokemonEvoluciones.pokemon_id == pokemon.id)
@@ -93,6 +96,7 @@ def show_pokemones_por_id(session: SessionDep, move_id: int) -> List[PokemonPubl
                 habilidades=habilidades,
                 grupo_huevo=grupo_huevo,
                 stats=stats,
+                movimientos=movimiento,
             )
 
             pokemones.append(pokemon_public)

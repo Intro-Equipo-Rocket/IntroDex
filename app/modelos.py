@@ -76,7 +76,7 @@ class PokemonPublic(SQLModel):
     habilidades: List["HabilidadesPublic"]
     grupo_huevo: List["GrupoHuevoPublic"]
     stats: List["StatsDelPokemonPublic"]
-    movimientos: List["MovimientosPublic"] | None = None
+    movimientos: List["MovimientosPokemonPublic"] | None = None
 
 
 class PokemonCreatePublic(SQLModel):
