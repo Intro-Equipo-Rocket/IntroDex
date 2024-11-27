@@ -4,6 +4,7 @@ from app.routers.pokemon import *
 from typing import List
 from sqlmodel import Session, select
 from app.database import SessionDep
+from sqlalchemy import delete
 
 router = APIRouter()
 
@@ -490,6 +491,62 @@ def verificar_movimientos_pokemon(
 
     # raise HTTPException(status_code=404, detail="El equipo a cambiar no fue encontrado")
 
+@router.put("/editar/{equipo_id}")
+def editar_equipo(session: SessionDep, equipo_viejo_id: int, equipo_nuevo: EquipoUpdate):
+    equipo_viejo = session.get(Equipo, equipo_viejo_id)
+
+    if not equipo_viejo:
+        raise HTTPException(status_code=404, detail='No se ha encontrado al equipo que quieres actualizar')
+    if not equipo_nuevo.nombre:
+        raise HTTPException(status_code=400, detail='Debes ingresar un nuevo nombre para el equipo')
+    if equipo_nuevo.generacion not in range(1, 9):
+        raise HTTPException(status_code=400, detail='La generación ingresada no es válida')
+    if len(equipo_nuevo.integrantes or []) > 6:
+        raise HTTPException(status_code=400, detail='No puedes tener más de 6 integrantes en un equipo')
+
+    equipo_viejo.nombre = equipo_nuevo.nombre
+    equipo_viejo.generacion = equipo_nuevo.generacion
+
+    if equipo_nuevo.integrantes:
+        equipo_viejo.integrantes.clear()
+        session.commit()
+
+        for integrante_nuevo in equipo_nuevo.integrantes:
+            nuevo_integrante = IntegrantesEquipo(equipo_id=equipo_viejo_id, pokemon_id=integrante_nuevo.pokemon_id, naturaleza_id=integrante_nuevo.naturaleza_id,)
+            equipo_viejo.integrantes.append(nuevo_integrante)
+            session.add(nuevo_integrante)
+
+            if integrante_nuevo.movimientos:
+                session.exec(delete(MovimientosPokemon).where(MovimientosPokemon.pokemon_id == integrante_nuevo.pokemon_id))
+                for movimiento_id in integrante_nuevo.movimientos:
+                    nuevo_movimiento = MovimientosPokemon(pokemon_id=integrante_nuevo.pokemon_id, move_id=movimiento_id,)
+                    session.add(nuevo_movimiento)
+
+            estadisticas_existentes = session.exec(select(Estadisticas).where(Estadisticas.member_id == nuevo_integrante.member_id)).first()
+
+            if estadisticas_existentes:
+                estadisticas_existentes.vida = integrante_nuevo.estadisticas[0]
+                estadisticas_existentes.ataque = integrante_nuevo.estadisticas[1]
+                estadisticas_existentes.defensa = integrante_nuevo.estadisticas[2]
+                estadisticas_existentes.ataque_especial = integrante_nuevo.estadisticas[3]
+                estadisticas_existentes.defensa_especial = integrante_nuevo.estadisticas[4]
+                estadisticas_existentes.velocidad = integrante_nuevo.estadisticas[5]
+            else:
+                nuevas_estadisticas = Estadisticas(
+                    member_id=nuevo_integrante.member_id,
+                    vida=integrante_nuevo.estadisticas[0],
+                    ataque=integrante_nuevo.estadisticas[1],
+                    defensa=integrante_nuevo.estadisticas[2],
+                    ataque_especial=integrante_nuevo.estadisticas[3],
+                    defensa_especial=integrante_nuevo.estadisticas[4],
+                    velocidad=integrante_nuevo.estadisticas[5],
+                )
+                session.add(nuevas_estadisticas)
+
+    session.commit()
+    session.refresh(equipo_viejo)
+
+    return equipo_nuevo
 
 @router.get("/id/{equipo_id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
 def obtener_equipo_por_id(session: SessionDep, equipo_id: int):

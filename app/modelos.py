@@ -491,6 +491,18 @@ class EquipoPublic(SQLModel):
     integrantes: List[IntegrantesEquipoPublic]
     generacion: int
 
+class IntegranteUpdate(SQLModel):
+    integrante_id: Optional[int] = None
+    pokemon_id: int
+    movimientos: Optional[List[int]] = None
+    naturaleza_id: int
+    estadisticas: Optional[List[int]] = None
+
+class EquipoUpdate(SQLModel):
+    id: int
+    nombre: str
+    generacion: int 
+    integrantes: Optional[List[IntegranteUpdate]] = None
 
 class Error(BaseModel):
     detail: str
