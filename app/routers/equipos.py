@@ -479,18 +479,6 @@ def verificar_movimientos_pokemon(
         
     return True
 
-# @router.put("/{equipo_id}")
-# def editar_equipo(equipo_id: int, equipo_nuevo: Equipo):
-#     for equipo in equipos_db:
-#         if equipo.id == equipo_id:
-#             equipo.nombre = equipo_nuevo.nombre
-#             equipo.pokemones = equipo_nuevo.pokemones
-#             equipo.generacion = equipo_nuevo.generacion
-
-#             return equipo
-
-    # raise HTTPException(status_code=404, detail="El equipo a cambiar no fue encontrado")
-
 @router.put("/editar/{equipo_id}")
 def editar_equipo(session: SessionDep, equipo_viejo_id: int, equipo_nuevo: EquipoUpdate):
     equipo_viejo = session.get(Equipo, equipo_viejo_id)
@@ -547,7 +535,11 @@ def editar_equipo(session: SessionDep, equipo_viejo_id: int, equipo_nuevo: Equip
     session.refresh(equipo_viejo)
 
     return equipo_nuevo
-
+    
+def get_movimientos_validos(session: SessionDep, pokemon_id: int) -> set:
+    movimientos = session.exec(Movimientos.id).join(MovimientosPokemon).filter(MovimientosPokemon.pokemon_id == pokemon_id).all()
+    return {movimiento.id for movimiento in movimientos}
+    
 @router.get("/id/{equipo_id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
 def obtener_equipo_por_id(session: SessionDep, equipo_id: int):
     equipo = buscar_equipo(session, equipo_id)
