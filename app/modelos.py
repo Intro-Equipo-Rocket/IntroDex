@@ -392,6 +392,7 @@ class IntegranteUpdate(SQLModel):
     pokemon_id: int
     movimientos: Optional[List[int]] = None
     naturaleza_id: int
+    estadisticas: Optional[List[int]] = None
 
 class EquipoUpdate(SQLModel):
     id: int
