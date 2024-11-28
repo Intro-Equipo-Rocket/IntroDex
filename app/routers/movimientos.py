@@ -6,6 +6,7 @@ from typing import List
 
 router = APIRouter()
 
+
 @router.get("/", response_model=List[MovimientosPublic])
 def obtener_movimientos(session: SessionDep):
     query = select(Movimientos)
@@ -16,6 +17,7 @@ def obtener_movimientos(session: SessionDep):
             detail="Movimientos not found",
         )
     return movimientos
+
 
 def verificar_move_id(move_id: int, session: SessionDep) -> bool:
     movimiento = session.exec(
@@ -76,16 +78,18 @@ def show_pokemones_por_id(session: SessionDep, move_id: int) -> List[PokemonPubl
                     movimiento.append(movimiento_pokemon)
 
             evoluciones = session.exec(
-                select(PokemonEvoluciones).where(PokemonEvoluciones.pokemon_id == pokemon.id)
+                select(PokemonEvoluciones).where(
+                    PokemonEvoluciones.pokemon_id == pokemon.id
+                )
             ).all()
 
             for evolucion in evoluciones:
                 evolucion.pokemon = session.exec(
                     select(Pokemon).where(Pokemon.id == evolucion.evolution_id)
-                ).first() 
-
+                ).first()
 
             pokemon_public = PokemonPublic(
+                id=pokemon.id,
                 nombre=pokemon.nombre,
                 imagen=pokemon.imagen,
                 altura=pokemon.altura,

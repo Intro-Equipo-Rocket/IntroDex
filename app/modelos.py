@@ -58,14 +58,19 @@ class Pokemon(PokemonBase, table=True):
     habilidades: List["HabilidadesPokemon"] = Relationship(back_populates="pokemon")
     grupo_huevo: List["GrupoHuevoPokemon"] = Relationship(back_populates="pokemon")
     stats: List["StatsDelPokemon"] = Relationship(back_populates="pokemon")
-    evoluciones: List["PokemonEvoluciones"] | None = Relationship(back_populates="pokemon")
-    movimientos: List["MovimientosPokemon"] | None = Relationship(back_populates="pokemon")
+    evoluciones: List["PokemonEvoluciones"] | None = Relationship(
+        back_populates="pokemon"
+    )
+    movimientos: List["MovimientosPokemon"] | None = Relationship(
+        back_populates="pokemon"
+    )
     integrante: List["IntegrantesEquipo"] | None = Relationship(
         back_populates="pokemon"
     )
 
 
 class PokemonPublic(SQLModel):
+    id: int
     nombre: str
     imagen: str
     altura: int
@@ -97,19 +102,27 @@ class PokemonCreatePublic(SQLModel):
 class PokemonCreate(PokemonBase):
     pass
 
+
 class PokemonEvoluciones(SQLModel, table=True):
     __tablename__ = "pokemon_evoluciones"
     pokemon_id: int = Field(sa_column=Column("pokemon_id", Integer, primary_key=True))
-    evolution_id: int = Field(sa_column=Column("evolution_id", Integer, ForeignKey("pokemon.pokemon_id"), primary_key=True))
+    evolution_id: int = Field(
+        sa_column=Column(
+            "evolution_id", Integer, ForeignKey("pokemon.pokemon_id"), primary_key=True
+        )
+    )
     imagen_evolucion: str = Field(sa_column=Column(Text, nullable=False))
     pokemon: Pokemon = Relationship(back_populates="evoluciones")
+
 
 class PokemonSigEvolucion(SQLModel):
     nombre: str
 
+
 class PokemonEvolucionesPublic(SQLModel):
     pokemon: PokemonSigEvolucion
     imagen_evolucion: str
+
 
 class Tipos(SQLModel, table=True):
     __tablename__ = "tipos"
