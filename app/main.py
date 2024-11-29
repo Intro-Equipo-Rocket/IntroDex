@@ -41,6 +41,20 @@ def main() -> None:
 
 app = FastAPI()
 
+# Lista de orígenes permitidos
+origins = [
+    "http://localhost:5173",
+]
+
+# Agregar el middleware de CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 app.include_router(pokemon.router, prefix="/pokemons", tags=["Pokemons"])
 app.include_router(movimientos.router, prefix="/movimientos", tags=["Movimientos"])

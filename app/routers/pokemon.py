@@ -58,6 +58,7 @@ def get_pokemons(session: SessionDep) -> list[PokemonPublic]:
             ).first()
 
         pokemon_public = PokemonPublic(
+            id=pokemon.id,
             nombre=pokemon.nombre,
             imagen=pokemon.imagen,
             altura=pokemon.altura,
@@ -117,8 +118,7 @@ def show_pokemon_por_id(session: SessionDep, pokemon_id: int) -> PokemonPublic:
     ).all()
 
     movimientos = session.exec(
-        select(MovimientosPokemon)
-        .where(MovimientosPokemon.pokemon_id == pokemon.id)
+        select(MovimientosPokemon).where(MovimientosPokemon.pokemon_id == pokemon.id)
     ).all()
 
     evoluciones = session.exec(
@@ -131,6 +131,7 @@ def show_pokemon_por_id(session: SessionDep, pokemon_id: int) -> PokemonPublic:
         ).first()
 
     pokemon_public = PokemonPublic(
+        id=pokemon.id,
         nombre=pokemon.nombre,
         imagen=pokemon.imagen,
         altura=pokemon.altura,
@@ -195,8 +196,7 @@ def show_pokemon_por_name(session: SessionDep, nombre: str) -> PokemonPublic:
     ).all()
 
     movimientos = session.exec(
-        select(MovimientosPokemon)
-        .where(MovimientosPokemon.pokemon_id == pokemon.id)
+        select(MovimientosPokemon).where(MovimientosPokemon.pokemon_id == pokemon.id)
     ).all()
 
     evoluciones = session.exec(
@@ -209,6 +209,7 @@ def show_pokemon_por_name(session: SessionDep, nombre: str) -> PokemonPublic:
         ).first()
 
     pokemon_public = PokemonPublic(
+        id=pokemon.id,
         nombre=pokemon.nombre,
         imagen=pokemon.imagen,
         altura=pokemon.altura,
