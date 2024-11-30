@@ -1,119 +1,68 @@
 from fastapi.testclient import TestClient
 from app.main import app
+from app.database import get_session
+from sqlmodel import SQLModel, Session, create_engine
+import pytest
+from app.modelos import Equipo, IntegrantesEquipo, Movimientos, Pokemon, MovimientosPokemon
 
-client = TestClient(app)
+DATABASE_URL = "sqlite:///./test_1.db"
+engine = create_engine(DATABASE_URL, echo=True)
 
-def test_editar_equipo_exitoso():
-    nuevo_equipo = {
-        "id": 1,
-        "nombre": "equipo prueba",
-        "pokemones": [
-            {
-                "pokemon": {
-                    "imagen": "string",
-                    "id": 27,
-                    "nombre": "pruebamon",
-                    "tipos": [0],
-                    "altura": 0,
-                    "peso": 0,
-                    "habilidades": [0],
-                    "habilidad_oculta": 0,
-                    "grupo_huevo": [0],
-                    "vida": 0,
-                    "ataque": 0,
-                    "defensa": 0,
-                    "ataque_especial": 0,
-                    "defensa_especial": 0,
-                    "velocidad": 0,
-                    "total": 0,
-                    "evoluciones": [0],
-                    "imagenes_evoluciones": ["string"],
-                    "movimientos_aprendibles_nivel": [0],
-                    "movimientos_aprendibles_evolucion": [0],
-                    "movimientos_aprendibles_tms": [0],
-                    "movimientos_aprendibles_huevo": [0],
-                    "debilidades_tipo": [0],
-                    "generacion": 0
-                },
-                "movimientos": [0],
-                "naturaleza": {
-                    "id": 0,
-                    "nombre": "string",
-                    "stat_perjudicada_id": 0,
-                    "stat_mejorada_id": 0
-                },
-                "evs": {
-                    "vida": 0,
-                    "ataque": 0,
-                    "defensa": 0,
-                    "ataque_especial": 0,
-                    "defensa_especial": 0,
-                    "velocidad": 0
-                }
-            }
-        ],
-        "generacion": 0
-    }
+@pytest.fixture(scope="module")
+def setup_db():
+    SQLModel.metadata.create_all(engine)
+    with Session(engine) as session:
+        equipo_1 = Equipo(id=1, nombre="Equipo Rocket", generacion=1)
+        equipo_2 = Equipo(id=2, nombre="Equipo Aqua", generacion=3)
+        
+        pokemon_1 = Pokemon(id=1, nombre="Pikachu", imagen="p.png", altura=0, peso=0, especie=1, generacion=1)
+        pokemon_2 = Pokemon(id=2, nombre="Squirtle", imagen="r.png", altura=0, peso=0, especie=3, generacion=1)
+        
+        movimiento_1 = Movimientos(id=1, nombre="Thunderbolt", tipo=1, categoria=1, potencia=90, precision=100, usos=15, generacion=1, efecto=1)
+        movimiento_2 = Movimientos(id=2, nombre="Water Gun", tipo=2, categoria=2, potencia=40, precision=100, usos=20, generacion=1, efecto=2)
 
-    response = client.put("/equipos/1", json=nuevo_equipo)
+        relacion = MovimientosPokemon(pokemon_id=2, move_id=1, id_metodo=1, nivel=0)
     
+        session.add_all([equipo_1, equipo_2, pokemon_1, pokemon_2, movimiento_1, movimiento_2, relacion])
+        session.commit()
+    yield
+    SQLModel.metadata.drop_all(engine)
+
+@pytest.fixture
+def client():
+    def override_get_session():
+        with Session(engine) as session:
+            yield session
+
+    app.dependency_overrides[get_session] = override_get_session
+    yield TestClient(app)
+    app.dependency_overrides.clear()
+
+def test_editar_equipo_exitoso(client, setup_db):
+    id_equipo_nuevo = 1
+    generacion = 4
+    response = client.put(f'equipos/editar/{id_equipo_nuevo}?nombre_equipo=dedwe&generacion_equipo={generacion}')
+
     assert response.status_code == 200
-    assert response.json()["nombre"] == "equipo prueba"
-    assert response.json()["pokemones"][0]["pokemon"]["nombre"] == "pruebamon"
+    assert response.json()["nombre"] == "dedwe"
 
-def test_editar_equipo_no_encontrado():
-    nuevo_equipo = {
-        "id": 2,
-        "nombre": "equipo prueba",
-        "pokemones": [
-            {
-                "pokemon": {
-                    "imagen": "string",
-                    "id": 27,
-                    "nombre": "pruebamon",
-                    "tipos": [0],
-                    "altura": 0,
-                    "peso": 0,
-                    "habilidades": [0],
-                    "habilidad_oculta": 0,
-                    "grupo_huevo": [0],
-                    "vida": 0,
-                    "ataque": 0,
-                    "defensa": 0,
-                    "ataque_especial": 0,
-                    "defensa_especial": 0,
-                    "velocidad": 0,
-                    "total": 0,
-                    "evoluciones": [0],
-                    "imagenes_evoluciones": ["string"],
-                    "movimientos_aprendibles_nivel": [0],
-                    "movimientos_aprendibles_evolucion": [0],
-                    "movimientos_aprendibles_tms": [0],
-                    "movimientos_aprendibles_huevo": [0],
-                    "debilidades_tipo": [0],
-                    "generacion": 0
-                },
-                "movimientos": [0],
-                "naturaleza": {
-                    "id": 0,
-                    "nombre": "string",
-                    "stat_perjudicada_id": 0,
-                    "stat_mejorada_id": 0
-                },
-                "evs": {
-                    "vida": 0,
-                    "ataque": 0,
-                    "defensa": 0,
-                    "ataque_especial": 0,
-                    "defensa_especial": 0,
-                    "velocidad": 0
-                }
-            }
-        ],
-        "generacion": 0
-    }
+def test_editar_equipo_no_encontrado(client, setup_db):
+    equipo_nuevo_id = 7
+    generacion_nueva = 4
+    response = client.put(f'/equipos/editar/{equipo_nuevo_id}?nombre_equipo=djbldasl&generacion_equipo={generacion_nueva}')
 
-    response = client.put("/equipos/2", json=nuevo_equipo)
-    
     assert response.status_code == 404
-    assert response.json()["detail"] == "El equipo a cambiar no fue encontrado"
+    assert response.json() == {'detail': f'El equipo con id {equipo_nuevo_id} no ha sido encontrado'}
+
+def test_editar_equipo_movimientos_incompatibles(client, setup_db):
+    pokemon_id = 1
+    naturaleza_id = 1
+    movimientos = 2
+
+    id = 1
+    generacion = 4
+    
+    response = client.put(f'/equipos/editar{id}?nombre_equipo=kjfds&generacion_equipo={generacion}&id_pokemon_1={pokemon_id}&id_naturaleza_1={naturaleza_id}')
+
+    assert response.status_code == 400
+    assert response.json() == {'detail': "El pokemon no puede aprender ese movimiento"}

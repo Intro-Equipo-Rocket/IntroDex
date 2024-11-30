@@ -489,7 +489,6 @@ class IntegrantesEquipoPublic(SQLModel):
     naturaleza: NaturalezaPublic
     evs: EstadisticasPublic
 
-
 class Equipo(SQLModel, table=True):
     __tablename__ = "equipo"
     id: int = Field(sa_column=Column("id", Integer, primary_key=True))
@@ -497,13 +496,11 @@ class Equipo(SQLModel, table=True):
     generacion: int = Field(sa_column=Column("generation_id", Integer, nullable=False))
     integrantes: List["IntegrantesEquipo"] = Relationship(back_populates="equipo")
 
-
 class EquipoPublic(SQLModel):
     id: int
     nombre: str
     integrantes: List[IntegrantesEquipoPublic]
     generacion: int
-
 
 class Error(BaseModel):
     detail: str

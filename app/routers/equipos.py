@@ -4,6 +4,7 @@ from app.routers.pokemon import *
 from typing import List
 from sqlmodel import Session, select
 from app.database import SessionDep
+from sqlalchemy import delete
 
 router = APIRouter()
 
@@ -477,20 +478,87 @@ def verificar_movimientos_pokemon(
             )
         
     return True
+    
+@router.put("/editar/{id_equipo}")
+def editar_equipo(
+    id_equipo: int,
+    nombre_equipo: str,
+    generacion_equipo: int,
+    session: SessionDep,
+    id_pokemon_1: int = None,
+    id_movimientos_pokemon_1: list[int] = None,
+    id_naturaleza_1: int = None,
+    evs_pokemon_1: Estadisticas = Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
+    id_pokemon_2: int = None,
+    id_movimientos_pokemon_2: list[int] = None,
+    id_naturaleza_2: int = None,
+    evs_pokemon_2: Estadisticas = Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
+    id_pokemon_3: int = None,
+    id_movimientos_pokemon_3: list[int] = None,
+    id_naturaleza_3: int = None,
+    evs_pokemon_3: Estadisticas = Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
+    id_pokemon_4: int = None,
+    id_movimientos_pokemon_4: list[int] = None,
+    id_naturaleza_4: int = None,
+    evs_pokemon_4: Estadisticas = Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
+    id_pokemon_5: int = None,
+    id_movimientos_pokemon_5: list[int] = None,
+    id_naturaleza_5: int = None,
+    evs_pokemon_5: Estadisticas = Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0),
+    id_pokemon_6: int = None,
+    id_movimientos_pokemon_6: list[int] = None,
+    id_naturaleza_6: int = None,
+    evs_pokemon_6: Estadisticas = Estadisticas(vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0)
+    ):
 
-# @router.put("/{equipo_id}")
-# def editar_equipo(equipo_id: int, equipo_nuevo: Equipo):
-#     for equipo in equipos_db:
-#         if equipo.id == equipo_id:
-#             equipo.nombre = equipo_nuevo.nombre
-#             equipo.pokemones = equipo_nuevo.pokemones
-#             equipo.generacion = equipo_nuevo.generacion
+    equipo = session.exec(select(Equipo).where(Equipo.id == id_equipo)).first()
+    if not equipo:
+        raise HTTPException(status_code=404, detail=f'El equipo con id {id_equipo} no ha sido encontrado')   
+    if generacion_equipo and generacion_equipo not in range(1, 9):
+        raise HTTPException(status_code=400, detail="La generación del equipo no es válida")
 
-#             return equipo
+    integrantes_a_eliminar = session.exec(select(IntegrantesEquipo).where(IntegrantesEquipo.equipo_id == id_equipo)).all()
+    for integrante in integrantes_a_eliminar:
+        evs = session.exec(select(Estadisticas).where(Estadisticas.member_id == integrante.id)).first()
+        session.delete(evs)
+        session.delete(integrante)
+    session.commit()
 
-    # raise HTTPException(status_code=404, detail="El equipo a cambiar no fue encontrado")
+    if nombre_equipo:
+        equipo.nombre = nombre_equipo
+    if generacion_equipo:
+        equipo.generacion = generacion_equipo
 
+    for i in range(1, 7):
+        id_pokemon = locals().get(f"id_pokemon_{i}")
+        id_movimientos = locals().get(f"id_movimientos_pokemon_{i}")
+        id_naturaleza = locals().get(f"id_naturaleza_{i}")
+        evs_pokemon = locals().get(f"evs_pokemon_{i}")
 
+        if id_pokemon is not None:
+            verificar_datos_integrantes(id_pokemon, generacion_equipo or equipo.generacion, id_movimientos, evs_pokemon, id_naturaleza, session)
+            asignacion_datos_integrantes(id_pokemon, id_movimientos, evs_pokemon, id_naturaleza, equipo, session)
+
+    session.add(equipo)
+    session.commit()
+    session.refresh(equipo)
+
+    integrantes_publicos: List[IntegrantesEquipoPublic] = []
+    ids_integrantes = []
+    for integrante in equipo.integrantes:
+        if integrante.id not in ids_integrantes:
+            moves_integrantes = session.exec((select(Movimientos).join(IntegrantesEquipo).where(IntegrantesEquipo.id == integrante.id, IntegrantesEquipo.move_id == Movimientos.id))).all()
+            integrantes_publicos.append(IntegrantesEquipoPublic(pokemon=integrante.pokemon, movimientos=moves_integrantes, naturaleza=integrante.naturaleza, evs=integrante.estadisticas))
+            ids_integrantes.append(integrante.id)
+
+    equipo_publico = EquipoPublic(id=equipo.id, nombre=equipo.nombre, generacion=equipo.generacion, integrantes=integrantes_publicos)
+
+    return equipo_publico
+
+def get_movimientos_validos(session: SessionDep, pokemon_id: int) -> set:
+    movimientos = session.exec(Movimientos.id).join(MovimientosPokemon).filter(MovimientosPokemon.pokemon_id == pokemon_id).all()
+    return {movimiento.id for movimiento in movimientos}
+    
 @router.get("/id/{equipo_id}", responses={status.HTTP_404_NOT_FOUND: {"model": Error}})
 def obtener_equipo_por_id(session: SessionDep, equipo_id: int):
     equipo = buscar_equipo(session, equipo_id)
