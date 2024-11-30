@@ -490,40 +490,40 @@ def editar_equipo(
     nombre_equipo: str,
     generacion_equipo: int,
     session: SessionDep,
-    id_pokemon_1: int = None,
-    id_movimientos_pokemon_1: list[int] = None,
+    id_pkm_1: int = None,
+    id_movimientos_pkm_1: list[int] = None,
     id_naturaleza_1: int = None,
-    evs_pokemon_1: Estadisticas = Estadisticas(
+    evs_pkm_1: Estadisticas = Estadisticas(
         vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0
     ),
-    id_pokemon_2: int = None,
-    id_movimientos_pokemon_2: list[int] = None,
+    id_pkm_2: int = None,
+    id_movimientos_pkm_2: list[int] = None,
     id_naturaleza_2: int = None,
-    evs_pokemon_2: Estadisticas = Estadisticas(
+    evs_pkm_2: Estadisticas = Estadisticas(
         vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0
     ),
-    id_pokemon_3: int = None,
-    id_movimientos_pokemon_3: list[int] = None,
+    id_pkm_3: int = None,
+    id_movimientos_pkm_3: list[int] = None,
     id_naturaleza_3: int = None,
-    evs_pokemon_3: Estadisticas = Estadisticas(
+    evs_pkm_3: Estadisticas = Estadisticas(
         vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0
     ),
-    id_pokemon_4: int = None,
-    id_movimientos_pokemon_4: list[int] = None,
+    id_pkm_4: int = None,
+    id_movimientos_pkm_4: list[int] = None,
     id_naturaleza_4: int = None,
-    evs_pokemon_4: Estadisticas = Estadisticas(
+    evs_pkm_4: Estadisticas = Estadisticas(
         vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0
     ),
-    id_pokemon_5: int = None,
-    id_movimientos_pokemon_5: list[int] = None,
+    id_pkm_5: int = None,
+    id_movimientos_pkm_5: list[int] = None,
     id_naturaleza_5: int = None,
-    evs_pokemon_5: Estadisticas = Estadisticas(
+    evs_pkm_5: Estadisticas = Estadisticas(
         vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0
     ),
-    id_pokemon_6: int = None,
-    id_movimientos_pokemon_6: list[int] = None,
+    id_pkm_6: int = None,
+    id_movimientos_pkm_6: list[int] = None,
     id_naturaleza_6: int = None,
-    evs_pokemon_6: Estadisticas = Estadisticas(
+    evs_pkm_6: Estadisticas = Estadisticas(
         vida=0, ataque=0, defensa=0, ataque_especial=0, defensa_especial=0, velocidad=0
     ),
 ):
@@ -556,10 +556,10 @@ def editar_equipo(
         equipo.generacion = generacion_equipo
 
     for i in range(1, 7):
-        id_pokemon = locals().get(f"id_pokemon_{i}")
-        id_movimientos = locals().get(f"id_movimientos_pokemon_{i}")
+        id_pokemon = locals().get(f"id_pkm_{i}")
+        id_movimientos = locals().get(f"id_movimientos_pkm_{i}")
         id_naturaleza = locals().get(f"id_naturaleza_{i}")
-        evs_pokemon = locals().get(f"evs_pokemon_{i}")
+        evs_pokemon = locals().get(f"evs_pkm_{i}")
 
         if id_pokemon is not None:
             verificar_datos_integrantes(
