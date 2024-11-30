@@ -547,11 +547,6 @@ def editar_equipo(
     ids_integrantes = []
     for integrante in equipo.integrantes:
         if integrante.id not in ids_integrantes:
-            # query_moves_integrante = (select(Movimientos).join(IntegrantesEquipo).where(
-            #         IntegrantesEquipo.id == integrante.id,
-            #         IntegrantesEquipo.move_id == Movimientos.id,
-            #     )
-            # )
             moves_integrantes = session.exec((select(Movimientos).join(IntegrantesEquipo).where(IntegrantesEquipo.id == integrante.id, IntegrantesEquipo.move_id == Movimientos.id))).all()
             integrantes_publicos.append(IntegrantesEquipoPublic(pokemon=integrante.pokemon, movimientos=moves_integrantes, naturaleza=integrante.naturaleza, evs=integrante.estadisticas))
             ids_integrantes.append(integrante.id)

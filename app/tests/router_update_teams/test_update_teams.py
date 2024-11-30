@@ -3,7 +3,7 @@ from app.main import app
 from app.database import get_session
 from sqlmodel import SQLModel, Session, create_engine
 import pytest
-from app.modelos import Equipo, IntegrantesEquipo, Movimientos, Pokemon, IntegranteUpdate, EquipoUpdate, MovimientosPokemon
+from app.modelos import Equipo, IntegrantesEquipo, Movimientos, Pokemon, MovimientosPokemon
 
 DATABASE_URL = "sqlite:///./test_1.db"
 engine = create_engine(DATABASE_URL, echo=True)
@@ -39,24 +39,30 @@ def client():
     app.dependency_overrides.clear()
 
 def test_editar_equipo_exitoso(client, setup_db):
-    equipo_nuevo = EquipoUpdate(id=1, nombre="Equipo Plasma", generacion=4)
-    response = client.put(f'/equipos/{equipo_nuevo.id}', json=equipo_nuevo.model_dump())
+    id_equipo_nuevo = 1
+    generacion = 4
+    response = client.put(f'equipos/editar/{id_equipo_nuevo}?nombre_equipo=dedwe&generacion_equipo={generacion}')
 
     assert response.status_code == 200
-    assert response.json()["nombre"] == "Equipo Plasma"
+    assert response.json()["nombre"] == "dedwe"
 
 def test_editar_equipo_no_encontrado(client, setup_db):
-    equipo_nuevo = EquipoUpdate(id=7, nombre="Equipo Plasma", generacion=4)
-    response = client.put(f'/equipos/{equipo_nuevo.id}', json=equipo_nuevo.model_dump())
+    equipo_nuevo_id = 7
+    generacion_nueva = 4
+    response = client.put(f'/equipos/editar/{equipo_nuevo_id}?nombre_equipo=djbldasl&generacion_equipo={generacion_nueva}')
 
     assert response.status_code == 404
-    assert response.json() == {"detail": "El equipo a cambiar no existe"}
+    assert response.json() == {'detail': f'El equipo con id {equipo_nuevo_id} no ha sido encontrado'}
 
 def test_editar_equipo_movimientos_incompatibles(client, setup_db):
-    integrante = IntegranteUpdate(pokemon_id=1, movimientos=[2], naturaleza_id=1) 
-    equipo_nuevo = EquipoUpdate(id=1, nombre="Equipo Plasma", generacion=4, integrantes=[integrante])
+    pokemon_id = 1
+    naturaleza_id = 1
+    movimientos = 2
+
+    id = 1
+    generacion = 4
     
-    response = client.put(f'/equipos/{equipo_nuevo.id}', json=equipo_nuevo.model_dump())
+    response = client.put(f'/equipos/editar{id}?nombre_equipo=kjfds&generacion_equipo={generacion}&id_pokemon_1={pokemon_id}&id_naturaleza_1={naturaleza_id}')
 
     assert response.status_code == 400
-    assert "El movimiento con id 2 no es compatible con el Pokémon 1" in response.json()["detail"]
+    assert response.json() == {'detail': "El pokemon no puede aprender ese movimiento"}
