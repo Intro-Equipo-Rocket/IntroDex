@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, status
 from app.modelos import *
 from sqlmodel import select
 from app.database import SessionDep
-import sys
 
 router = APIRouter()
 
@@ -40,12 +39,6 @@ def get_pokemons(session: SessionDep) -> list[PokemonPublic]:
             select(StatsDelPokemon).where(StatsDelPokemon.pokemon_id == pokemon.id)
         ).all()
 
-        # movimientos = session.exec(
-        #     select(Movimientos)
-        #     .join(MovimientosPokemon)
-        #     .where(MovimientosPokemon.pokemon_id == pokemon.id)
-        # ).all()
-
         evoluciones = session.exec(
             select(PokemonEvoluciones).where(
                 PokemonEvoluciones.pokemon_id == pokemon.id
@@ -64,13 +57,10 @@ def get_pokemons(session: SessionDep) -> list[PokemonPublic]:
             altura=pokemon.altura,
             peso=pokemon.peso,
             generacion=pokemon.generacion,
-            # id_evolucion=pokemon.id_evolucion,
-            # imagen_evolucion=pokemon.imagen_evolucion,
             tipos=tipos,
             habilidades=habilidades,
             grupo_huevo=grupo_huevo,
             stats=stats,
-            # movimientos=movimientos,
             evoluciones=evoluciones,
         )
         pokemons_public.append(pokemon_public)
@@ -137,8 +127,6 @@ def show_pokemon_por_id(session: SessionDep, pokemon_id: int) -> PokemonPublic:
         altura=pokemon.altura,
         peso=pokemon.peso,
         generacion=pokemon.generacion,
-        # id_evolucion=pokemon.id_evolucion,
-        # imagen_evolucion=pokemon.imagen_evolucion,
         tipos=tipos,
         habilidades=habilidades,
         grupo_huevo=grupo_huevo,
@@ -215,8 +203,6 @@ def show_pokemon_por_name(session: SessionDep, nombre: str) -> PokemonPublic:
         altura=pokemon.altura,
         peso=pokemon.peso,
         generacion=pokemon.generacion,
-        # id_evolucion=pokemon.id_evolucion,
-        # imagen_evolucion=pokemon.imagen_evolucion,
         tipos=tipos,
         habilidades=habilidades,
         grupo_huevo=grupo_huevo,
