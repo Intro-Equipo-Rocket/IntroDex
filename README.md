@@ -35,6 +35,7 @@ Consiste en implementar un sitio web para obtener información sobre Pokemones, 
 
 ## Uso
 ### Ejecutar el Servidor
+#### FastAPI
 
 > **❗IMPORTANT:** Se adjunta aquí un repositorio con los archivos .csv con la información necesaria para soportar la funcionalidad del proyecto: [Veekun](https://github.com/veekun/pokedex)
 
@@ -49,6 +50,35 @@ Consiste en implementar un sitio web para obtener información sobre Pokemones, 
     - `--reload` reinicia el servidor automáticamente al detectar cambios en el código (útil para desarrollo).
 
 2. **Accede a la API** en tu navegador o cliente HTTP:
+
+    - La API estará disponible en: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+    - La documentación interactiva (Swagger UI) estará en: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+#### Docker
+
+1. **Abre una terminal y navega al directorio raíz del proyecto** donde se    encuentra el archivo Dockerfile.
+
+2. **Construye la imagen Docker** con el siguiente comando:
+
+    ```bash
+        docker build -t <Nombre-de-la-imagen> .
+    ```
+
+    - `-t nombre-de-la-imagen`: Etiqueta tu imagen con un nombre amigable.
+    - `.`: Especifica el contexto de construcción (directorio actual).
+
+3. **Ejecuta un contenedor** basado en la imagen que acabas de construir:
+
+    ```bash
+        docker run --rm -it -p 8000:8000 <Nombre-de-la-imagen>
+    ```
+
+    - `-d`: Opcional, Ejecuta el contenedor en segundo plano.
+    - `-it`: ver salida en la terminal.
+    - `--rm`: contenedor descartable, borrarlo al terminar.
+    - `-p 8000:8000`: Mapea el puerto 8000 del contenedor al puerto 8000 de tu máquina.
+
+4. **Accede a la API** en tu navegador o cliente HTTP:
 
     - La API estará disponible en: [http://127.0.0.1:8000](http://127.0.0.1:8000)
     - La documentación interactiva (Swagger UI) estará en: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
