@@ -674,7 +674,8 @@ def eliminar_equipo(session: SessionDep, equipo_id: int):
         evs = session.exec(
             select(Estadisticas).where(Estadisticas.member_id == integrante.id)
         ).first()
-        session.delete(evs)
+        if evs:
+            session.delete(evs)
         session.delete(integrante)
 
     session.delete(equipo)
